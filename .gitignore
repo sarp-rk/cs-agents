@@ -1,0 +1,16 @@
+# Credentials
+.env
+
+# Local data (Supabase'de)
+data/transcripts/
+data/qa_pairs.jsonl
+data/system_prompt.txt
+
+# Generated output (lokalde üretiliyor)
+deluge_final.js
+
+# Misc
+__pycache__/
+*.pyc
+*.pyo
+self_client.json
