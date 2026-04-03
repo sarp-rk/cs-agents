@@ -6,8 +6,14 @@ Zoho SalesIQ üzerinde çalışır, bilemediğinde gerçek agente devreder.
 ## Mimari
 
 ```
-Müşteri mesaj yazar → Zoho SalesIQ Zobot → Deluge script (Claude API çağrısı) → Cevap
-Bilmiyorsa → gerçek agente devreder
+Müşteri mesaj yazar
+    ↓
+Zoho SalesIQ Zobot → Deluge script
+    ↓
+1. Supabase'den ilgili kb_chunks çek (FTS)
+2. Zoho API'den conversation history çek
+3. Claude API'ye gönder
+4. [HANDOFF] varsa agente devret, yoksa cevap ver
 ```
 
 Deluge script Zoho'nun kendi sunucusunda çalışır — external sunucu yok, deploy yok.
@@ -16,32 +22,39 @@ Deluge script Zoho'nun kendi sunucusunda çalışır — external sunucu yok, de
 
 | Dosya | Açıklama |
 |-------|----------|
-| `1_fetch_transcripts.py` | Zoho API → attended chat transcript'leri çek → `data/transcripts/` |
-| `2_process_data.py` | Transcript'lerden Q&A çiftleri çıkar → `data/qa_pairs.jsonl` |
-| `3_build_prompt.py` | KB + Q&A örneklerini birleştirip sistem promptu oluşturur → `data/system_prompt.txt` |
-| `4_generate_deluge.py` | Sistem promptunu `deluge_script.js` şablonuna gömer → `deluge_final.js` |
-| `deluge_script.js` | Zobot Code Block şablonu (Claude API çağrısı, handoff logic) |
-| `deluge_final.js` | Zobot'a yapıştırılacak final script (sistem promptu gömülü) |
-| `data/knowledge_base/` | KB dosyaları (.md) |
-| `data/qa_pairs.jsonl` | Transcript'lerden çıkarılan Q&A çiftleri |
+| `1_fetch_transcripts.py` | Zoho API → attended transcript'leri çek → Supabase (transcripts + qa_pairs) |
+| `3_build_prompt.py` | Kurallar + davranış → `data/system_prompt.txt` (Q&A örnekleri yok, KB Supabase'den geliyor) |
+| `4_generate_deluge.py` | system_prompt → `deluge_final.js` |
+| `5_update_kb.py` | Supabase qa_pairs → Claude Haiku → kb_chunks (36 kategori × 2 marka) |
+| `deluge_script.js` | Zobot Code Block şablonu |
+| `deluge_final.js` | Zobot'a yapıştırılacak final script (sistem promptu gömülü, API key dahil) |
+| `.github/workflows/kb_update.yml` | GitHub Actions: günde 2x pipeline |
 
 ## Knowledge Base
 
-| Dosya | İçerik | Durum |
-|-------|--------|-------|
-| `romuscasino_promotions.md` | Tüm bonus detayları (Welcome Pack, Happy Hour, vb.) | ✅ Hazır |
-| `romuscasino_terms.md` | T&C, KYC, çekim limitleri | ✅ Hazır |
-| `romuscasino_bonus_terms.md` | Max cashout, wagering kuralları | ✅ Hazır |
-| `captainslots_*.md` | CaptainSlots için aynıları | ⏳ Bekliyor |
-| `manual_qa.md` | Ekip tarafından yazılacak sık sorular | ⏳ Bekliyor |
+KB artık `data/knowledge_base/` dosyalarında değil — Supabase `kb_chunks` tablosunda.
+
+**36 alt kategori × 2 marka = 72 chunk:**
+
+| Kategori | Alt kategoriler |
+|----------|----------------|
+| Bonus (13) | nodep_freespins, survey_spins, birthday, welcome_pack, happy_hour, weekly_promos, activation, wagering, max_cashout, eligible_games, removal, cancellation_rules, loss_request |
+| Withdrawal (4) | process, pending, limits, deposit_issue |
+| KYC (5) | documents, payment_ownership, process, pending, address_mismatch |
+| Account (8) | registration, email_issue, login, phone_geo, duplicate, closure, reactivation, self_exclusion |
+| Technical (3) | game, payment, login_issue |
+| VIP (3) | how_to_join, cashback, levels |
 
 ## Güncelleme Akışı
 
-KB değişince:
-1. `data/knowledge_base/` dosyasını güncelle
-2. `py 3_build_prompt.py`
-3. `py 4_generate_deluge.py`
-4. `deluge_final.js` → API key ekle → Zobot'a yapıştır → Publish
+**Otomatik (GitHub Actions — günde 2x: 12:00 + 20:00 CET):**
+1. `1_fetch_transcripts.py` → yeni Zoho transcript'lerini Supabase'e yazar
+2. `5_update_kb.py` → kb_chunks'ı günceller
+
+**Deluge script değişince:**
+1. `py 3_build_prompt.py`
+2. `py 4_generate_deluge.py`
+3. `deluge_final.js` → API key ekle → Zobot'a yapıştır → Publish
 
 ## Zoho API
 
@@ -54,23 +67,30 @@ KB değişince:
 - **Rate limit**: ~80 req/dk (MIN_INTERVAL=0.75s), 5 paralel thread
 - **OAuth console**: `api-console.zoho.eu` (EU hesabı — `.com` değil!)
 
+## Supabase
+
+- **URL**: `https://txkjpwbbperwbbxscxlq.supabase.co`
+- **Tablolar**: `transcripts`, `qa_pairs`, `kb_chunks`, `pipeline_state`
+- **FTS**: `kb_chunks.search_vector` — French tokenizer, GIN index
+
 ## Ortam
 
 - **Python**: `py` komutuyla çalıştır
 - **Credentials**: `.env` dosyasında (asla commit etme)
 - **Screen name**: `livechathelp247`
+- **GitHub repo**: `sarp-rk/cs-agents` (private)
 
 ## Markalar
 
-| Brand | Department |
-|-------|-----------|
-| RomusCasino | Romus Department |
-| CaptainSlots | Captain Department |
+| Brand | Department | Deluge BRAND değeri |
+|-------|-----------|---------------------|
+| RomusCasino | Romus Department | `romus` |
+| CaptainSlots | Captain Department | `captain` |
 
 ## Önemli Notlar
 
-- History.csv export'u büyük çoğunlukla **missed** chat — agent yanıtı yok, Q&A için işe yaramaz
+- History.csv export'u büyük çoğunlukla **missed** chat — Q&A için işe yaramaz
 - Gerçek transcript'ler API ile çekilmeli (`status=attended`)
-- CaptainSlots sitesi Cloudflare korumalı — manuel kopyalama gerekiyor
-- `4_generate_deluge.py` Unicode filtresi: emoji ve U+024F üstü karakterleri temizler (Deluge parser sorunu)
+- `SUPABASE_URL` secret'ında trailing newline olmamalı — `%0a` DNS hatası verir
 - Preview modunda handoff = "No proper response" — normal davranış, production'da çalışır
+- Deluge'da `urlEncode()` çalışmıyor — `encodeUrl()` kullanılmalı
