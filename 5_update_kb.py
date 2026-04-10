@@ -14,8 +14,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+SUPABASE_URL    = os.getenv("SUPABASE_URL")
+SUPABASE_KEY    = os.getenv("SUPABASE_SERVICE_KEY")
+OPENAI_API_KEY  = os.getenv("OPENAI_API_KEY")
 SB_HEADERS   = {
     "apikey":        SUPABASE_KEY,
     "Authorization": f"Bearer {SUPABASE_KEY}",
@@ -301,8 +302,19 @@ def get_existing_chunk(brand, category):
     return rows[0] if rows else None
 
 
+def generate_embedding(text):
+    r = requests.post(
+        "https://api.openai.com/v1/embeddings",
+        headers={"Authorization": f"Bearer {OPENAI_API_KEY}", "Content-Type": "application/json"},
+        json={"model": "text-embedding-3-small", "input": text},
+    )
+    return r.json()["data"][0]["embedding"]
+
+
 def upsert_chunk(brand, category, title, content, chunk_id=None):
+    embedding = generate_embedding(title + "\n" + content)
     payload = {"brand": brand, "category": category, "title": title, "content": content,
+                "embedding": embedding,
                 "updated_at": datetime.now(timezone.utc).isoformat()}
     if chunk_id:
         requests.patch(
@@ -327,12 +339,11 @@ Focus: {focus}
 Real support conversations from this category:
 {qa_text}
 
-Write a detailed knowledge base section in French covering this specific topic.
+Write a detailed knowledge base section covering this specific topic in French.
 Rules:
-- French only
 - Factual only — no invented details, only what appears in conversations or is confirmed casino policy
 - Markdown format: ## title, then bullet points or short paragraphs
-- Max 2000 characters
+- Max 2000 characters total
 - Be specific: include exact amounts, timeframes, steps, conditions where known
 - Prioritize the most common situations agents handle
 
