@@ -921,3 +921,47 @@ DELETE FROM kb_chunks WHERE category = 'bonus_nodep_freespins';
 - [ ] **Step 4: Verify bot is working**
 
 Ask the test bot: "do you have no deposit offers?" — should not mention Gates of Olympus or 30 free spins.
+
+---
+
+## Geri Alma (Rollback) Rehberi
+
+### Acil Durum: Bot cevap vermiyor (chunk'lar unapproved)
+
+Supabase → SQL Editor:
+```sql
+UPDATE kb_chunks SET approved = TRUE;
+```
+
+### Tam Geri Alma
+
+**1. Supabase SQL Editor:**
+```sql
+ALTER TABLE qa_pairs DROP COLUMN IF EXISTS is_campaign;
+ALTER TABLE kb_chunks DROP COLUMN IF EXISTS approved;
+
+CREATE OR REPLACE FUNCTION match_kb_chunks(
+  query_embedding vector(1536),
+  match_brand     text,
+  match_count     int
+)
+RETURNS TABLE (id bigint, brand text, category text, title text, content text, similarity float)
+LANGUAGE sql STABLE AS $$
+  SELECT id, brand, category, title, content,
+    1 - (embedding <=> query_embedding) AS similarity
+  FROM kb_chunks
+  WHERE brand = match_brand
+  ORDER BY embedding <=> query_embedding
+  LIMIT match_count;
+$$;
+```
+
+**2. Python script'leri eski haline döndür:**
+```bash
+git checkout 246dff4 -- 1_fetch_transcripts.py 5_update_kb.py
+git commit -m "revert: kb quality control changes"
+```
+
+**3. Approval UI:** Vercel dashboard'dan projeyi sil. Başka hiçbir şeyi etkilemez.
+
+Toplam süre: ~10 dakika.
