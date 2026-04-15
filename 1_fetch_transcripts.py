@@ -27,8 +27,6 @@ SB_HEADERS    = {
 # Campaign detection
 CAMPAIGN_KEYWORDS = [
     "ruby vegas", "ruby casino", "rubyvegas", "rubycasino",
-    "romus casino", "romuscasino",
-    "captain slots", "captainslots",
     "affiliate",
 ]
 
@@ -231,9 +229,10 @@ def main():
         print("Yeni konuşma yok.")
         return
 
-    saved  = 0
-    errors = 0
-    start  = time.time()
+    saved    = 0
+    campaigns = 0
+    errors   = 0
+    start    = time.time()
 
     with ThreadPoolExecutor(max_workers=5) as executor:
         futures = {executor.submit(fetch_and_store, cid): cid for cid in pending}
@@ -241,6 +240,8 @@ def main():
             conv_id, status = future.result()
             if status.startswith("saved"):
                 saved += 1
+            elif status.startswith("campaign"):
+                campaigns += 1
             elif status.startswith("error"):
                 errors += 1
                 print(f"  Hata {conv_id}: {status}")
@@ -250,7 +251,7 @@ def main():
                 remaining = (len(pending) - i) / (rate / 60) if rate > 0 else 0
                 print(f"  {saved}/{len(pending)} kaydedildi | {rate:.0f}/dk | ~{remaining/60:.1f} dk kaldı")
 
-    print(f"\nTamamlandı! {saved} yeni transcript, {errors} hata.")
+    print(f"\nTamamlandı! {saved} yeni transcript, {campaigns} kampanya, {errors} hata.")
 
 
 if __name__ == "__main__":
