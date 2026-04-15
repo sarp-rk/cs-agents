@@ -24,6 +24,26 @@ SB_HEADERS    = {
     "Prefer": "resolution=ignore-duplicates",
 }
 
+# Campaign detection
+CAMPAIGN_KEYWORDS = [
+    "ruby vegas", "ruby casino", "rubyvegas", "rubycasino",
+    "romus casino", "romuscasino",
+    "captain slots", "captainslots",
+    "affiliate",
+]
+
+
+def is_campaign_conversation(messages):
+    """Return True if any message contains a campaign keyword."""
+    for msg in messages:
+        if not isinstance(msg, dict):
+            continue
+        text = (msg.get("message", {}).get("text", "") or "").lower()
+        if any(kw in text for kw in CAMPAIGN_KEYWORDS):
+            return True
+    return False
+
+
 # Rate limiter
 RATE_LOCK          = threading.Lock()
 LAST_REQUEST_TIME  = [0.0]
@@ -88,7 +108,7 @@ def sb_get_existing_ids():
     return existing
 
 
-def sb_insert_transcript(conv_id, meta, qa_pairs):
+def sb_insert_transcript(conv_id, meta, qa_pairs, is_campaign=False):
     """Transcript meta + Q&A çiftlerini Supabase'e yaz."""
     # transcripts tablosu
     requests.post(
@@ -107,10 +127,11 @@ def sb_insert_transcript(conv_id, meta, qa_pairs):
     if qa_pairs:
         rows = [
             {
-                "conv_id":  conv_id,
-                "question": p["question"],
-                "answer":   p["answer"],
-                "language": meta.get("language"),
+                "conv_id":     conv_id,
+                "question":    p["question"],
+                "answer":      p["answer"],
+                "language":    meta.get("language"),
+                "is_campaign": is_campaign,
             }
             for p in qa_pairs
         ]
@@ -166,8 +187,10 @@ def fetch_and_store(conv_id):
         messages = data.get("data", [])
         meta     = data.get("meta", {})
         pairs    = extract_qa_pairs(messages, conv_id)
-        sb_insert_transcript(conv_id, meta, pairs)
-        return conv_id, f"saved ({len(pairs)} qa)"
+        campaign = is_campaign_conversation(messages)
+        sb_insert_transcript(conv_id, meta, pairs, is_campaign=campaign)
+        label = "campaign" if campaign else f"saved ({len(pairs)} qa)"
+        return conv_id, label
     except Exception as e:
         return conv_id, f"error: {e}"
 
