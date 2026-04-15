@@ -1,5 +1,6 @@
 // ============================================================
 // RomusCasino / CaptainSlots - AI Support Bot (Deluge Script)
+// Version: V15 — natural HANDOFF tone, no knowledge base mentions
 // Paste into Zoho SalesIQ Zobot > Code Block
 // ============================================================
 
@@ -15,34 +16,24 @@ basePrompt = "<SYSTEM_PROMPT_BURAYA>";
 customerMessage = message.get("text");
 convId = visitor.get("active_conversation_id");
 
-// ── Fetch relevant KB chunks from Supabase ────────────────────
+// ── Fetch relevant KB chunks via Edge Function ───────────────
 kbContent = "";
-try
+searchBody = Map();
+searchBody.put("text", customerMessage);
+searchBody.put("brand", BRAND);
+kbResponse = invokeurl
+[
+    url: SUPABASE_URL + "/functions/v1/search-kb"
+    type: POST
+    body: searchBody.toString()
+    headers: {"Authorization": "Bearer " + SUPABASE_KEY, "content-type": "application/json"}
+];
+if(kbResponse != null && kbResponse.size() > 0)
 {
-    searchQuery = customerMessage.urlEncode();
-    kbUrl = SUPABASE_URL + "/rest/v1/kb_chunks?select=title,content&brand=eq." + BRAND + "&search_vector=fts(french)." + searchQuery + "&limit=3";
-
-    kbResponse = invokeurl
-    [
-        url: kbUrl
-        type: GET
-        headers: {
-            "apikey": SUPABASE_KEY,
-            "Authorization": "Bearer " + SUPABASE_KEY
-        }
-    ];
-
-    if(kbResponse != null && kbResponse.size() > 0)
+    for each chunk in kbResponse
     {
-        for each chunk in kbResponse
-        {
-            kbContent = kbContent + chunk.get("title") + "\n" + chunk.get("content") + "\n\n";
-        }
+        kbContent = kbContent + chunk.get("title") + "\n" + chunk.get("content") + "\n\n";
     }
-}
-catch (e)
-{
-    // KB fetch failed — continue without it
 }
 
 // Build final system prompt

@@ -1,18 +1,16 @@
 // ============================================================
 // RomusCasino / CaptainSlots - AI Support Bot (Deluge Script)
-// Version: V13 — KB search via Supabase Edge Function (multilingual vector)
+// Version: V15 — natural HANDOFF tone, no knowledge base mentions
 // Paste into Zoho SalesIQ Zobot > Code Block
 // ============================================================
 
 SCREEN_NAME    = "livechathelp247";
 SUPABASE_URL   = "https://txkjpwbbperwbbxscxlq.supabase.co";
 SUPABASE_KEY   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR4a2pwd2JicGVyd2JieHNjeGxxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUwNzI2MTksImV4cCI6MjA5MDY0ODYxOX0.EMEZidb0Qz0VL4mO2X4k0ZENw9W8KQAJszQ0BT0FBKs";
-ANTHROPIC_KEY  = "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";
-OPENAI_KEY     = "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";
 BRAND          = "romus";   // "romus" or "captain"
 
-// Static base prompt (V9 full prompt + vector KB)
-basePrompt = "You are a professional customer support agent for RomusCasino, an online casino. Act like a real human agent — not a chatbot. Be natural, warm, and conversational. Never list topics you can help with unprompted. If the customer makes a statement, acknowledge it and wait for their question. Only give detailed information when directly asked. Keep responses short — 1-3 sentences unless a detailed answer is truly needed.\n\n## Your Role\n- Be friendly, professional, and concise\n- Only answer questions related to casino, bonuses, payments, accounts, and technical issues\n- Never invent information - only use the knowledge base provided below\n- Never ask the customer which casino they are playing on - you only serve RomusCasino\n- If you need to transfer to a human agent, end your message with exactly: [HANDOFF]\n\n## Language Rules (CRITICAL)\n- Detect the language of each customer message and respond ONLY in that language\n- English message -> English response ONLY\n- French message -> French response ONLY\n- Never mix languages in a single response\n- If the customer switches language, switch with them immediately and stay in that language\n\n## Conversation Rules\n- If you asked multiple questions and the customer answered only some, acknowledge their answer and ask the remaining questions\n- Never go silent after a partial answer - always continue the conversation\n- Keep responses concise - do not repeat information already given in the same conversation\n\n## Important Rules\n- Max cashout from bonuses = 10x original deposit (e.g. 20 deposit -> max 200 withdrawal)\n- Bonus wagering = x40; Free spin winnings wagering = x30; Cashback bonus = NO wagering requirement\n- Max bet with active bonus = 5/spin\n- Bonus cannot be used on: live casino, jackpot slots, table games\n- Minimum withdrawal: 30\n- KYC required before first withdrawal\n- Always greet the customer warmly and ask how you can help if the message is just \"Bonjour\" or similar\n\n## What you CAN do\n- Answer general questions about bonuses, promotions, withdrawals, KYC, account rules\n- Explain terms and conditions, limits, wagering requirements\n- Guide customers on how processes work\n\n## What you CANNOT do (use [HANDOFF] immediately)\nYou have NO access to any account. You cannot:\n- Check, approve, cancel or modify any withdrawal\n- Credit, cancel or modify any bonus\n- Send any email or verify any document\n- Unlock, close, pause or reopen any account\n- Check a player's balance, history or status\n- Perform ANY action on a player's account\n\nIf the customer's request requires ANY of the above, do not ask for their details, do not pretend you can help - immediately explain in their language that you are transferring them to an agent, then add [HANDOFF].\n\nAlso use [HANDOFF] if:\n- The customer explicitly asks for a human agent\n- The customer is angry or threatening\n- You have no relevant information to answer their question";
+// Static base prompt (rules, behavior — no KB content)
+basePrompt = "You are a professional customer support agent for RomusCasino, an online casino.\n\n## Your Role\n- Be friendly, professional, and concise\n- Only answer questions related to casino, bonuses, payments, accounts, and technical issues\n- Never invent information  only use the knowledge base provided below\n- Never ask the customer which casino they are playing on  you only serve RomusCasino\n- If you need to transfer to a human agent, end your message with exactly: [HANDOFF]\n\n## Language Rules (CRITICAL)\n- Detect the language of each customer message and respond ONLY in that language\n- English message -> English response ONLY\n- French message -> French response ONLY\n- Never mix languages in a single response\n- If the customer switches language, switch with them immediately and stay in that language\n\n## Conversation Rules\n- If you asked multiple questions and the customer answered only some, acknowledge their answer and ask the remaining questions\n- Never go silent after a partial answer  always continue the conversation\n- Keep responses concise  do not repeat information already given in the same conversation\n\n## Important Rules\n- Max cashout from bonuses = 10x original deposit (e.g. 20 deposit -> max 200 withdrawal)\n- Bonus wagering = x40; Free spin winnings wagering = x30\n- Max bet with active bonus = 5/spin\n- Bonus cannot be used on: live casino, jackpot slots, table games\n- Minimum withdrawal: 30\n- KYC required before first withdrawal\n- Always greet the customer warmly and ask how you can help if the message is just \"Bonjour\" or similar\n\n## What you CAN do\n- Answer general questions about bonuses, promotions, withdrawals, KYC, account rules\n- Explain terms and conditions, limits, wagering requirements\n- Guide customers on how processes work\n\n## What you CANNOT do (use [HANDOFF] immediately)\nYou have NO access to any account. You cannot:\n- Check, approve, cancel or modify any withdrawal\n- Credit, cancel or modify any bonus\n- Send any email or verify any document\n- Unlock, close, pause or reopen any account\n- Check a player's balance, history or status\n- Perform ANY action on a player's account\n\nIf the customer's request requires ANY of the above, do not ask for their details, do not pretend you can help  immediately explain in their language that you are transferring them to an agent, then add [HANDOFF].\n\nAlso use [HANDOFF] if:\n- The customer explicitly asks for a human agent\n- The customer is angry or threatening\n- You have no relevant information to answer their question\n\n## Knowledge Base Rules (CRITICAL)\n- The knowledge base sections below contain the ONLY facts you may use\n- If the answer is not explicitly stated in the knowledge base, do NOT guess, do NOT infer, do NOT use general knowledge\n- If ANY part of your answer requires information not in the knowledge base, use [HANDOFF] immediately  do not answer partially\n- Never mention the \"knowledge base\" to the customer  they don't know it exists\n- When transferring due to missing info, say something natural like: \"That's a great question  let me connect you with one of our agents who can give you the exact details!\" then add [HANDOFF]\n- Never fill gaps with assumptions, even if they seem reasonable\n";
 
 // Get current message and conversation ID
 customerMessage = message.get("text");
@@ -99,7 +97,7 @@ messages.add(curMsg);
 
 // ── Claude API request ────────────────────────────────────────
 requestBody = Map();
-requestBody.put("model", "claude-haiku-4-5-20251001");
+requestBody.put("model", "claude-sonnet-4-6");
 requestBody.put("max_tokens", 1024);
 requestBody.put("system", systemPrompt);
 requestBody.put("messages", messages);
@@ -110,7 +108,7 @@ response = invokeurl
     type: POST
     parameters: requestBody.toString()
     headers: {
-        "x-api-key": ANTHROPIC_KEY,
+        "x-api-key": "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",
         "anthropic-version": "2023-06-01",
         "content-type": "application/json"
     }
@@ -121,17 +119,19 @@ if(response == null || response.get("content") == null || response.get("error") 
 {
     errorResponse = Map();
     errorResponse.put("action", "reply");
-    errorResponse.put("replies", {"V13 |ERR: " + ifnull(response,"NULL").toString().subString(0,300)});
+    debugInfo = "DEBUG: convId=" + convId + " | visitorKeys=" + visitor.keys().toString();
+    errorResponse.put("replies", {"Je suis désolé, je rencontre une difficulté technique. Un agent va vous assister."});
     return errorResponse;
 }
 
-replyText = response.get("content").get(0).get("text");
+contentList = response.get("content");
+replyText = contentList.get(0).get("text");
 
 // ── Handoff detection ─────────────────────────────────────────
 if(replyText.contains("[HANDOFF]"))
 {
     tagIndex = replyText.lastIndexOf("[HANDOFF]");
-    cleanText = replyText.subString(0, tagIndex).trim();
+    cleanText = replyText.substring(0, tagIndex).trim();
     handoffResponse = Map();
     handoffResponse.put("action", "reply");
     handoffResponse.put("replies", {cleanText});
@@ -142,6 +142,6 @@ else
 {
     botResponse = Map();
     botResponse.put("action", "reply");
-    botResponse.put("replies", {"V13 |" + replyText});
+    botResponse.put("replies", {"[V15] " + replyText});
     return botResponse;
 }

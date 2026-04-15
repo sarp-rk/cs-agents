@@ -2,8 +2,9 @@ name: KB Update Pipeline
 
 on:
   schedule:
-    - cron: '0 11 * * *'   # 12:00 CET (UTC+1)
-    - cron: '0 19 * * *'   # 20:00 CET (UTC+1)
+    - cron: '0 11 * * *'   # 12:00 CET (UTC+1) — günlük
+    - cron: '0 19 * * *'   # 20:00 CET (UTC+1) — günlük
+    - cron: '0 10 * * 1'   # 11:00 CET Pazartesi — haftalık promotions
   workflow_dispatch:        # Manuel tetikleme
 
 jobs:
@@ -27,6 +28,10 @@ jobs:
       - name: Update KB chunks
         run: python 5_update_kb.py
 
+      - name: Scrape promotions page (Pazartesi)
+        if: github.event_name == 'schedule' && startsWith(github.event.schedule, '0 10')
+        run: python 6_scrape_promotions.py
+
     env:
       ZOHO_CLIENT_ID:       ${{ secrets.ZOHO_CLIENT_ID }}
       ZOHO_CLIENT_SECRET:   ${{ secrets.ZOHO_CLIENT_SECRET }}
@@ -36,3 +41,4 @@ jobs:
       ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
       SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      OPENAI_API_KEY:       ${{ secrets.OPENAI_API_KEY }}
