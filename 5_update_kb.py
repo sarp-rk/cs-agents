@@ -26,7 +26,7 @@ SB_HEADERS   = {
 
 client = anthropic.Anthropic()
 
-LOOKBACK_DAYS       = 30   # ilk çalıştırmada geniş tut, sonra 7'ye düşür
+LOOKBACK_DAYS       = 90   # 30 → 90 gün
 MIN_ANSWER_LEN      = 40
 MAX_QA_PER_CATEGORY = 50
 
@@ -262,10 +262,11 @@ def fetch_all_qa(days):
             f"{SUPABASE_URL}/rest/v1/qa_pairs",
             headers={**SB_HEADERS, "Prefer": ""},
             params={
-                "select":     "question,answer",
-                "created_at": f"gte.{since}",
-                "limit":      limit,
-                "offset":     offset,
+                "select":      "question,answer",
+                "created_at":  f"gte.{since}",
+                "is_campaign": "eq.false",
+                "limit":       limit,
+                "offset":      offset,
             },
         )
         batch = r.json()
@@ -315,6 +316,7 @@ def upsert_chunk(brand, category, title, content, chunk_id=None):
     embedding = generate_embedding(title + "\n" + content)
     payload = {"brand": brand, "category": category, "title": title, "content": content,
                 "embedding": embedding,
+                "approved": False,
                 "updated_at": datetime.now(timezone.utc).isoformat()}
     if chunk_id:
         requests.patch(
