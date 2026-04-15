@@ -1,4 +1,9 @@
 -- supabase/migrations/001_kb_quality_control.sql
+-- 2026-04-15 KB Quality Control
+--
+-- WARNING: After running this migration, ALL kb_chunks become unapproved.
+-- The bot will return no KB results until chunks are approved via the UI.
+-- Emergency rollback: UPDATE kb_chunks SET approved = TRUE;
 
 -- 1. Add is_campaign flag to qa_pairs
 ALTER TABLE qa_pairs ADD COLUMN IF NOT EXISTS is_campaign BOOLEAN DEFAULT FALSE;
