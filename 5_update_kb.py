@@ -253,8 +253,7 @@ def categorize(question, answer):
     return "other"
 
 
-def fetch_all_qa(days):
-    since = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+def fetch_all_qa(since_iso: str):
     rows  = []
     offset, limit = 0, 1000
     while True:
@@ -262,11 +261,10 @@ def fetch_all_qa(days):
             f"{SUPABASE_URL}/rest/v1/qa_pairs",
             headers={**SB_HEADERS, "Prefer": ""},
             params={
-                "select":      "question,answer",
-                "created_at":  f"gte.{since}",
-                "is_campaign": "eq.false",
-                "limit":       limit,
-                "offset":      offset,
+                "select":     "question,answer",
+                "created_at": f"gte.{since_iso}",
+                "limit":      limit,
+                "offset":     offset,
             },
         )
         batch = r.json()
@@ -368,8 +366,19 @@ def update_pipeline_state(key, value):
 
 
 def main():
-    print(f"Son {LOOKBACK_DAYS} günün Q&A çiftleri çekiliyor...")
-    qa_rows = fetch_all_qa(LOOKBACK_DAYS)
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--from-date", help="YYYY-MM-DD formatında başlangıç tarihi (default: son 90 gün)")
+    args = parser.parse_args()
+
+    if args.from_date:
+        from_dt = datetime.strptime(args.from_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    else:
+        from_dt = datetime.now(timezone.utc) - timedelta(days=LOOKBACK_DAYS)
+
+    since_iso = from_dt.isoformat()
+    print(f"Q&A çiftleri çekiliyor (from: {from_dt.date()})...")
+    qa_rows = fetch_all_qa(since_iso)
     print(f"Toplam {len(qa_rows)} Q&A çifti")
 
     buckets = group_by_category(qa_rows)

@@ -17,13 +17,14 @@ export default function HomePage() {
   const [expanded, setExpanded] = useState<number | null>(null);
   const [editing, setEditing] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
+  const [editTitle, setEditTitle] = useState("");
 
   async function load() {
     const res = await fetch(`/api/chunks?filter=${filter}`);
     setChunks(await res.json());
   }
 
-  useEffect(() => { load(); }, [filter]);
+  useEffect(() => { load(); }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function setApproved(id: number, approved: boolean) {
     await fetch(`/api/chunks/${id}`, {
@@ -38,9 +39,15 @@ export default function HomePage() {
     await fetch(`/api/chunks/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content: editContent }),
+      body: JSON.stringify({ content: editContent, title: editTitle }),
     });
     setEditing(null);
+    load();
+  }
+
+  async function deleteChunk(id: number) {
+    if (!confirm("Delete this chunk? This cannot be undone.")) return;
+    await fetch(`/api/chunks/${id}`, { method: "DELETE" });
     load();
   }
 
@@ -81,7 +88,15 @@ export default function HomePage() {
             <span className="text-xs text-gray-400">{new Date(chunk.updated_at).toLocaleDateString()}</span>
           </div>
 
-          <h2 className="font-semibold text-gray-800">{chunk.title}</h2>
+          {editing === chunk.id ? (
+            <input
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              className="w-full border rounded px-3 py-1 text-sm font-semibold"
+            />
+          ) : (
+            <h2 className="font-semibold text-gray-800">{chunk.title}</h2>
+          )}
 
           <button
             onClick={() => setExpanded(expanded === chunk.id ? null : chunk.id)}
@@ -99,10 +114,6 @@ export default function HomePage() {
                   rows={10}
                   className="w-full border rounded px-3 py-2 text-xs font-mono"
                 />
-                <div className="flex gap-2">
-                  <button onClick={() => saveEdit(chunk.id)} className="bg-green-600 text-white px-3 py-1 rounded text-xs">Save</button>
-                  <button onClick={() => setEditing(null)} className="bg-gray-200 px-3 py-1 rounded text-xs">Cancel</button>
-                </div>
               </div>
             ) : (
               <pre className="text-xs bg-gray-50 rounded p-3 whitespace-pre-wrap overflow-auto">{chunk.content}</pre>
@@ -120,11 +131,28 @@ export default function HomePage() {
                 ↩ Revoke
               </button>
             )}
+            {editing === chunk.id ? (
+              <>
+                <button onClick={() => saveEdit(chunk.id)} className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700">
+                  💾 Save
+                </button>
+                <button onClick={() => setEditing(null)} className="bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs hover:bg-gray-300">
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => { setExpanded(chunk.id); setEditing(chunk.id); setEditContent(chunk.content); setEditTitle(chunk.title); }}
+                className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-xs hover:bg-gray-200"
+              >
+                ✏️ Edit
+              </button>
+            )}
             <button
-              onClick={() => { setExpanded(chunk.id); setEditing(chunk.id); setEditContent(chunk.content); }}
-              className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-xs hover:bg-gray-200"
+              onClick={() => deleteChunk(chunk.id)}
+              className="bg-red-100 text-red-600 px-3 py-1 rounded text-xs hover:bg-red-200"
             >
-              ✏️ Edit
+              🗑 Delete
             </button>
           </div>
         </div>

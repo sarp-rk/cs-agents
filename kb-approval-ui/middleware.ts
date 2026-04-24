@@ -1,15 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(req: NextRequest) {
-  const auth = req.cookies.get("kb_auth")?.value;
-  const isLoginPage = req.nextUrl.pathname === "/login";
+  const { pathname } = req.nextUrl;
 
-  if (!auth && !isLoginPage) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  // Login sayfası ve API'ye her zaman izin ver
+  if (pathname.startsWith("/login") || pathname.startsWith("/api/login")) {
+    return NextResponse.next();
   }
-  if (auth && isLoginPage) {
-    return NextResponse.redirect(new URL("/", req.url));
+
+  const auth = req.cookies.get("kb_auth");
+  if (!auth || auth.value !== "1") {
+    const loginUrl = req.nextUrl.clone();
+    loginUrl.pathname = "/login";
+    return NextResponse.redirect(loginUrl);
   }
+
   return NextResponse.next();
 }
 

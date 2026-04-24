@@ -2,10 +2,9 @@ name: KB Update Pipeline
 
 on:
   schedule:
-    - cron: '0 11 * * *'   # 12:00 CET (UTC+1) — günlük
-    - cron: '0 19 * * *'   # 20:00 CET (UTC+1) — günlük
-    - cron: '0 10 * * 1'   # 11:00 CET Pazartesi — haftalık promotions
-  workflow_dispatch:        # Manuel tetikleme
+    - cron: '0 8 * * *'    # 09:00 CET (UTC+1) — günlük
+    - cron: '0 8 * * 1'    # 09:00 CET Pazartesi — haftalık promotions da çalışır
+  workflow_dispatch:        # Manuel tetikleme (from-date argümanı olmadan = dün)
 
 jobs:
   update:
@@ -22,14 +21,14 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Fetch new transcripts
+      - name: Fetch new transcripts (dünden bugüne)
         run: python 1_fetch_transcripts.py
 
-      - name: Update KB chunks
+      - name: Update KB chunks (dünden bugüne)
         run: python 5_update_kb.py
 
       - name: Scrape promotions page (Pazartesi)
-        if: github.event_name == 'schedule' && startsWith(github.event.schedule, '0 10')
+        if: github.event_name == 'schedule' && startsWith(github.event.schedule, '0 8 * * 1')
         run: python 6_scrape_promotions.py
 
     env:

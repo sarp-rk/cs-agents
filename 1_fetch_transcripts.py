@@ -1,10 +1,13 @@
 import os
+import sys
 import json
 import time
 import threading
 import requests
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timezone, timedelta
 from dotenv import load_dotenv
+sys.stdout.reconfigure(encoding='utf-8')
 
 load_dotenv()
 
@@ -194,13 +197,14 @@ def fetch_and_store(conv_id):
 
 
 # ── Main ─────────────────────────────────────────────────────
-def fetch_all_conversation_ids():
+def fetch_new_conversation_ids(from_time_ms: int) -> list:
+    """Sadece from_time_ms sonrası konuşmaları çek."""
     ids  = []
     page = 1
-    print("Konuşma listesi alınıyor...")
+    print(f"Konuşma listesi alınıyor (from_time={from_time_ms})...")
     while True:
         resp = rate_limited_get(f"{API_BASE}/conversations", params={
-            "status": "attended", "limit": 99, "page": page
+            "status": "attended", "limit": 99, "page": page, "from_time": from_time_ms
         })
         data = resp.json().get("data", [])
         if not data:
@@ -213,12 +217,23 @@ def fetch_all_conversation_ids():
 
 
 def main():
-    print("Token alınıyor...")
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--from-date", help="YYYY-MM-DD formatında başlangıç tarihi (default: dün)")
+    args = parser.parse_args()
+
+    if args.from_date:
+        from_dt = datetime.strptime(args.from_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    else:
+        from_dt = datetime.now(timezone.utc) - timedelta(days=1)
+
+    from_time_ms = int(from_dt.timestamp() * 1000)
+    print(f"Token alınıyor... (from: {from_dt.date()})")
     CURRENT_TOKEN[0]    = get_access_token()
     TOKEN_EXPIRES_AT[0] = time.time() + 3600
 
-    all_ids  = fetch_all_conversation_ids()
-    print(f"\nToplam {len(all_ids)} attended konuşma.")
+    all_ids  = fetch_new_conversation_ids(from_time_ms)
+    print(f"\nToplam {len(all_ids)} yeni konuşma.")
 
     print("Supabase'deki mevcut ID'ler kontrol ediliyor...")
     existing = sb_get_existing_ids()
