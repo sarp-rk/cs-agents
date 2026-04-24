@@ -62,9 +62,9 @@ def translate_text(text: str) -> str:
 
 
 def fetch_all_chunks() -> list[dict]:
-    """Fetch all kb_chunks from Supabase."""
+    """Fetch only pending (approved=false) kb_chunks from Supabase."""
     url = f"{SUPABASE_URL}/rest/v1/kb_chunks"
-    params = {"select": "id,brand,category,title,content"}
+    params = {"select": "id,brand,category,title,content", "approved": "eq.false"}
     resp = requests.get(url, headers=SB_HEADERS, params=params)
     resp.raise_for_status()
     return resp.json()

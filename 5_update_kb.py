@@ -325,6 +325,34 @@ def upsert_chunk(brand, category, title, content, chunk_id=None):
         requests.post(f"{SUPABASE_URL}/rest/v1/kb_chunks", headers=SB_HEADERS, json=payload)
 
 
+def has_new_info(brand, category, qa_pairs, existing_content):
+    """Ask Claude if new Q&A pairs contain info not already in the existing chunk."""
+    if not existing_content:
+        return True  # No existing chunk → always create
+
+    focus = CATEGORY_FOCUS.get(category, category)
+    qa_text = "\n\n".join([f"Visitor: {p['q']}\nAgent: {p['a']}" for p in qa_pairs])
+
+    prompt = f"""You are reviewing a casino knowledge base for {brand.title()} Casino.
+Category: {category} — {focus}
+
+EXISTING KB CHUNK:
+{existing_content}
+
+NEW SUPPORT CONVERSATIONS:
+{qa_text}
+
+Do the new conversations contain any useful information NOT already covered in the existing chunk?
+Answer with ONLY "YES" or "NO"."""
+
+    response = client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=10,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return response.content[0].text.strip().upper().startswith("YES")
+
+
 def build_kb_chunk(brand, category, qa_pairs, existing_content):
     focus = CATEGORY_FOCUS.get(category, category)
     qa_text = "\n\n".join([f"Visitor: {p['q']}\nAgent: {p['a']}" for p in qa_pairs])
@@ -333,13 +361,12 @@ def build_kb_chunk(brand, category, qa_pairs, existing_content):
     prompt = f"""You are maintaining a casino customer support knowledge base for {brand.title()} Casino.
 Category: {category}
 Focus: {focus}
-
 {existing_section}
 
-Real support conversations from this category:
+New support conversations from this category:
 {qa_text}
 
-Write a detailed knowledge base section covering this specific topic in French.
+Write a detailed knowledge base section covering this specific topic in English.
 Rules:
 - Factual only — no invented details, only what appears in conversations or is confirmed casino policy
 - Markdown format: ## title, then bullet points or short paragraphs
@@ -350,7 +377,7 @@ Rules:
 Return ONLY the markdown content."""
 
     response = client.messages.create(
-        model="claude-haiku-4-5-20251001",
+        model="claude-haiku-4-5",
         max_tokens=800,
         messages=[{"role": "user", "content": prompt}],
     )
@@ -398,6 +425,9 @@ def main():
             chunk_id = existing["id"] if existing else None
 
             try:
+                if not has_new_info(brand, category, pairs, existing_content):
+                    print(f"  – {category} (yeni bilgi yok, atlandı)")
+                    continue
                 content = build_kb_chunk(brand, category, pairs, existing_content)
                 lines   = content.strip().splitlines()
                 title   = lines[0].lstrip("#").strip() if lines else f"{brand} {category}"
