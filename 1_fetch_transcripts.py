@@ -189,7 +189,7 @@ def fetch_and_store(conv_id, start_time_ms=None):
         meta     = data.get("meta", {})
         conv_date = None
         if start_time_ms:
-            conv_date = datetime.fromtimestamp(start_time_ms / 1000, tz=timezone.utc).date().isoformat()
+            conv_date = datetime.fromtimestamp(int(start_time_ms) / 1000, tz=timezone.utc).date().isoformat()
         pairs    = extract_qa_pairs(messages, conv_id)
         campaign = is_campaign_conversation(messages)
         sb_insert_transcript(conv_id, meta, pairs, is_campaign=campaign, conv_date=conv_date)
