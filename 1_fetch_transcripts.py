@@ -132,7 +132,7 @@ def sb_insert_transcript(conv_id, meta, qa_pairs, is_campaign=False):
                 "question":    p["question"],
                 "answer":      p["answer"],
                 "language":    meta.get("language"),
-                "is_campaign": is_campaign,
+
             }
             for p in qa_pairs
         ]
