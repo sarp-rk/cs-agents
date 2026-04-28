@@ -262,7 +262,7 @@ def fetch_all_qa(since_iso: str):
             headers={**SB_HEADERS, "Prefer": ""},
             params={
                 "select":     "question,answer",
-                "created_at": f"gte.{since_iso}",
+                "conv_date":  f"gte.{since_iso}",
                 "limit":      limit,
                 "offset":     offset,
             },
@@ -292,13 +292,22 @@ def group_by_category(qa_rows):
 
 
 def get_existing_chunk(brand, category):
+    """Return approved chunk (for upsert target) + combined content from approved+pending for comparison."""
     r = requests.get(
         f"{SUPABASE_URL}/rest/v1/kb_chunks",
         headers={**SB_HEADERS, "Prefer": ""},
-        params={"brand": f"eq.{brand}", "category": f"eq.{category}", "select": "id,title,content"},
+        params={"brand": f"eq.{brand}", "category": f"eq.{category}", "select": "id,title,content,approved"},
     )
-    rows = r.json()
-    return rows[0] if rows else None
+    rows = r.json() if isinstance(r.json(), list) else []
+    approved = next((row for row in rows if row.get("approved")), None)
+    pending  = next((row for row in rows if not row.get("approved")), None)
+    combined_content = "\n\n---\n\n".join(
+        r["content"] for r in [approved, pending] if r and r.get("content")
+    ) or None
+    target = approved or pending  # upsert target: prefer approved row
+    if target:
+        target = {**target, "_combined_content": combined_content}
+    return target
 
 
 def generate_embedding(text):
@@ -421,14 +430,15 @@ def main():
                 continue
 
             existing = get_existing_chunk(brand, category)
-            existing_content = existing["content"] if existing else None
+            existing_content = existing["_combined_content"] if existing else None
             chunk_id = existing["id"] if existing else None
 
             try:
                 if not has_new_info(brand, category, pairs, existing_content):
                     print(f"  – {category} (yeni bilgi yok, atlandı)")
                     continue
-                content = build_kb_chunk(brand, category, pairs, existing_content)
+                approved_content = existing["content"] if existing else None
+                content = build_kb_chunk(brand, category, pairs, approved_content)
                 lines   = content.strip().splitlines()
                 title   = lines[0].lstrip("#").strip() if lines else f"{brand} {category}"
                 upsert_chunk(brand, category, title, content, chunk_id)

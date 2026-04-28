@@ -4,7 +4,12 @@ on:
   schedule:
     - cron: '0 8 * * *'    # 09:00 CET (UTC+1) — günlük
     - cron: '0 8 * * 1'    # 09:00 CET Pazartesi — haftalık promotions da çalışır
-  workflow_dispatch:        # Manuel tetikleme (from-date argümanı olmadan = dün)
+  workflow_dispatch:
+    inputs:
+      from_date:
+        description: 'Start date (YYYY-MM-DD). Default: yesterday.'
+        required: false
+        default: ''
 
 jobs:
   update:
@@ -21,18 +26,28 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Fetch new transcripts (dünden bugüne)
-        run: python 1_fetch_transcripts.py
-
-      - name: Update KB chunks (dünden bugüne)
+      - name: Fetch new transcripts
         run: |
-          YESTERDAY=$(date -d "yesterday" +%Y-%m-%d)
-          python 5_update_kb.py --from-date $YESTERDAY
+          FROM_DATE="${{ github.event.inputs.from_date }}"
+          if [ -n "$FROM_DATE" ]; then
+            python 1_fetch_transcripts.py --from-date $FROM_DATE
+          else
+            python 1_fetch_transcripts.py
+          fi
+
+      - name: Update KB chunks
+        run: |
+          FROM_DATE="${{ github.event.inputs.from_date }}"
+          if [ -n "$FROM_DATE" ]; then
+            python 5_update_kb.py --from-date $FROM_DATE
+          else
+            YESTERDAY=$(date -d "yesterday" +%Y-%m-%d)
+            python 5_update_kb.py --from-date $YESTERDAY
+          fi
 
       - name: Scrape promotions page (Pazartesi)
         if: github.event_name == 'schedule' && startsWith(github.event.schedule, '0 8 * * 1')
         run: python 6_scrape_promotions.py
-
 
       - name: Notify dashboard
         if: always()
@@ -41,6 +56,7 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           curl -sf -X POST http://80.240.17.15/webhook -H "Content-Type: application/json" -H "X-Webhook-Secret: ${WEBHOOK_SECRET}" -d "{\"project\":\"${REPO}\"}" || true
+
     env:
       ZOHO_CLIENT_ID:       ${{ secrets.ZOHO_CLIENT_ID }}
       ZOHO_CLIENT_SECRET:   ${{ secrets.ZOHO_CLIENT_SECRET }}

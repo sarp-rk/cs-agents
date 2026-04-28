@@ -109,7 +109,7 @@ def sb_get_existing_ids():
     return existing
 
 
-def sb_insert_transcript(conv_id, meta, qa_pairs, is_campaign=False):
+def sb_insert_transcript(conv_id, meta, qa_pairs, is_campaign=False, conv_date=None):
     """Transcript meta + Q&A çiftlerini Supabase'e yaz."""
     # transcripts tablosu
     requests.post(
@@ -128,11 +128,11 @@ def sb_insert_transcript(conv_id, meta, qa_pairs, is_campaign=False):
     if qa_pairs:
         rows = [
             {
-                "conv_id":     conv_id,
-                "question":    p["question"],
-                "answer":      p["answer"],
-                "language":    meta.get("language"),
-
+                "conv_id":   conv_id,
+                "question":  p["question"],
+                "answer":    p["answer"],
+                "language":  meta.get("language"),
+                "conv_date": conv_date,
             }
             for p in qa_pairs
         ]
@@ -178,7 +178,7 @@ def extract_qa_pairs(messages, conv_id):
 
 
 # ── Fetch single conversation ────────────────────────────────
-def fetch_and_store(conv_id):
+def fetch_and_store(conv_id, start_time_ms=None):
     try:
         resp = rate_limited_get(f"{API_BASE}/conversations/{conv_id}/messages")
         if resp.status_code == 404:
@@ -187,9 +187,12 @@ def fetch_and_store(conv_id):
         data     = resp.json()
         messages = data.get("data", [])
         meta     = data.get("meta", {})
+        conv_date = None
+        if start_time_ms:
+            conv_date = datetime.fromtimestamp(start_time_ms / 1000, tz=timezone.utc).date().isoformat()
         pairs    = extract_qa_pairs(messages, conv_id)
         campaign = is_campaign_conversation(messages)
-        sb_insert_transcript(conv_id, meta, pairs, is_campaign=campaign)
+        sb_insert_transcript(conv_id, meta, pairs, is_campaign=campaign, conv_date=conv_date)
         label = "campaign" if campaign else f"saved ({len(pairs)} qa)"
         return conv_id, label
     except Exception as e:
@@ -198,9 +201,9 @@ def fetch_and_store(conv_id):
 
 # ── Main ─────────────────────────────────────────────────────
 def fetch_new_conversation_ids(from_time_ms: int) -> list:
-    """Sadece from_time_ms sonrası konuşmaları çek."""
-    ids  = []
-    page = 1
+    """Sadece from_time_ms sonrası konuşmaları çek. {id, start_time_ms} döndür."""
+    convs = []
+    page  = 1
     print(f"Konuşma listesi alınıyor (from_time={from_time_ms})...")
     while True:
         resp = rate_limited_get(f"{API_BASE}/conversations", params={
@@ -210,10 +213,10 @@ def fetch_new_conversation_ids(from_time_ms: int) -> list:
         if not data:
             break
         for conv in data:
-            ids.append(conv.get("id"))
-        print(f"  Sayfa {page}: {len(data)} konuşma ({len(ids)} toplam)")
+            convs.append({"id": conv.get("id"), "start_time": conv.get("start_time") or conv.get("created_time")})
+        print(f"  Sayfa {page}: {len(data)} konuşma ({len(convs)} toplam)")
         page += 1
-    return ids
+    return convs
 
 
 def main():
@@ -232,12 +235,12 @@ def main():
     CURRENT_TOKEN[0]    = get_access_token()
     TOKEN_EXPIRES_AT[0] = time.time() + 3600
 
-    all_ids  = fetch_new_conversation_ids(from_time_ms)
-    print(f"\nToplam {len(all_ids)} yeni konuşma.")
+    all_convs = fetch_new_conversation_ids(from_time_ms)
+    print(f"\nToplam {len(all_convs)} yeni konuşma.")
 
     print("Supabase'deki mevcut ID'ler kontrol ediliyor...")
-    existing = sb_get_existing_ids()
-    pending  = [cid for cid in all_ids if cid not in existing]
+    existing   = sb_get_existing_ids()
+    pending    = [c for c in all_convs if c["id"] not in existing]
     print(f"{len(existing)} zaten var, {len(pending)} yeni.\n")
 
     if not pending:
@@ -250,7 +253,7 @@ def main():
     start    = time.time()
 
     with ThreadPoolExecutor(max_workers=5) as executor:
-        futures = {executor.submit(fetch_and_store, cid): cid for cid in pending}
+        futures = {executor.submit(fetch_and_store, c["id"], c["start_time"]): c["id"] for c in pending}
         for i, future in enumerate(as_completed(futures), 1):
             conv_id, status = future.result()
             if status.startswith("saved"):
