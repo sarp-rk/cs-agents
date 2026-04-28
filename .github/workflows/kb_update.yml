@@ -25,7 +25,9 @@ jobs:
         run: python 1_fetch_transcripts.py
 
       - name: Update KB chunks (dünden bugüne)
-        run: python 5_update_kb.py
+        run: |
+          YESTERDAY=$(date -d "yesterday" +%Y-%m-%d)
+          python 5_update_kb.py --from-date $YESTERDAY
 
       - name: Scrape promotions page (Pazartesi)
         if: github.event_name == 'schedule' && startsWith(github.event.schedule, '0 8 * * 1')
