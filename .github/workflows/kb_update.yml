@@ -1,9 +1,6 @@
 name: KB Update Pipeline
 
 on:
-  schedule:
-    - cron: '0 8 * * *'    # 09:00 CET (UTC+1) — günlük
-    - cron: '0 8 * * 1'    # 09:00 CET Pazartesi — haftalık promotions da çalışır
   workflow_dispatch:
     inputs:
       from_date:
@@ -46,7 +43,7 @@ jobs:
           fi
 
       - name: Scrape promotions page (Pazartesi)
-        if: github.event_name == 'schedule' && startsWith(github.event.schedule, '0 8 * * 1')
+        if: false
         run: python 6_scrape_promotions.py
 
       - name: Notify dashboard
