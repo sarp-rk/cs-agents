@@ -33,6 +33,9 @@ jobs:
         if: github.event_name == 'schedule' && startsWith(github.event.schedule, '0 8 * * 1')
         run: python 6_scrape_promotions.py
 
+      - name: Notify dashboard
+        if: always()
+        run: curl -sf -X POST http://80.240.17.15/webhook -H "Content-Type: application/json" -H "X-Webhook-Secret: ${{ secrets.WEBHOOK_SECRET }}" -d '{"project":"${{ github.repository }}"}' || true
     env:
       ZOHO_CLIENT_ID:       ${{ secrets.ZOHO_CLIENT_ID }}
       ZOHO_CLIENT_SECRET:   ${{ secrets.ZOHO_CLIENT_SECRET }}
