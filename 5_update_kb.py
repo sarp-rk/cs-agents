@@ -365,7 +365,16 @@ Answer with ONLY "YES" or "NO"."""
 def build_kb_chunk(brand, category, qa_pairs, existing_content):
     focus = CATEGORY_FOCUS.get(category, category)
     qa_text = "\n\n".join([f"Visitor: {p['q']}\nAgent: {p['a']}" for p in qa_pairs])
-    existing_section = f"\n\nExisting KB content to UPDATE (keep all useful info, add/improve):\n{existing_content}" if existing_content else ""
+    if existing_content:
+        existing_section = f"\n\nExisting KB content (DO NOT modify or rewrite — keep exactly as-is):\n{existing_content}"
+        new_info_instruction = """- Keep ALL existing content unchanged
+- Append ONLY genuinely new information not already covered
+- Mark every new bullet/sentence with **[NEW]** at the start
+- If nothing new to add, return the existing content unchanged"""
+    else:
+        existing_section = ""
+        new_info_instruction = """- Markdown format: ## title, then bullet points or short paragraphs
+- Max 2000 characters total"""
 
     prompt = f"""You are maintaining a casino customer support knowledge base for {brand.title()} Casino.
 Category: {category}
@@ -375,13 +384,11 @@ Focus: {focus}
 New support conversations from this category:
 {qa_text}
 
-Write a detailed knowledge base section covering this specific topic in English.
+Write a knowledge base section covering this specific topic in English.
 Rules:
 - Factual only — no invented details, only what appears in conversations or is confirmed casino policy
-- Markdown format: ## title, then bullet points or short paragraphs
-- Max 2000 characters total
 - Be specific: include exact amounts, timeframes, steps, conditions where known
-- Prioritize the most common situations agents handle
+{new_info_instruction}
 
 Return ONLY the markdown content."""
 

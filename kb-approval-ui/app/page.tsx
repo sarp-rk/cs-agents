@@ -11,20 +11,43 @@ type Chunk = {
   updated_at: string;
 };
 
+function HighlightedContent({ content }: { content: string }) {
+  const lines = content.split("\n");
+  return (
+    <pre className="text-xs bg-gray-50 rounded p-3 whitespace-pre-wrap overflow-auto">
+      {lines.map((line, i) =>
+        line.includes("**[NEW]**") ? (
+          <span key={i} className="bg-green-100 text-green-800 block">{line}{"\n"}</span>
+        ) : (
+          <span key={i}>{line}{"\n"}</span>
+        )
+      )}
+    </pre>
+  );
+}
+
+function isUpdatedToday(updated_at: string) {
+  const today = new Date().toDateString();
+  return new Date(updated_at).toDateString() === today;
+}
+
 export default function HomePage() {
   const [chunks, setChunks] = useState<Chunk[]>([]);
   const [filter, setFilter] = useState<"pending" | "approved">("pending");
+  const [brand, setBrand] = useState<"all" | "romus" | "captain">("all");
   const [expanded, setExpanded] = useState<number | null>(null);
   const [editing, setEditing] = useState<number | null>(null);
   const [editContent, setEditContent] = useState("");
   const [editTitle, setEditTitle] = useState("");
 
   async function load() {
-    const res = await fetch(`/api/chunks?filter=${filter}`);
+    const params = new URLSearchParams({ filter });
+    if (brand !== "all") params.set("brand", brand);
+    const res = await fetch(`/api/chunks?${params}`);
     setChunks(await res.json());
   }
 
-  useEffect(() => { load(); }, [filter]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, [filter, brand]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function setApproved(id: number, approved: boolean) {
     await fetch(`/api/chunks/${id}`, {
@@ -60,16 +83,29 @@ export default function HomePage() {
         </a>
       </div>
 
-      <div className="flex gap-2">
-        {(["pending", "approved"] as const).map((f) => (
-          <button
-            key={f}
-            onClick={() => setFilter(f)}
-            className={`px-4 py-1 rounded text-sm font-medium ${filter === f ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}
-          >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
-          </button>
-        ))}
+      <div className="flex gap-4">
+        <div className="flex gap-2">
+          {(["pending", "approved"] as const).map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              className={`px-4 py-1 rounded text-sm font-medium ${filter === f ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-700"}`}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          {(["all", "romus", "captain"] as const).map((b) => (
+            <button
+              key={b}
+              onClick={() => setBrand(b)}
+              className={`px-4 py-1 rounded text-sm font-medium ${brand === b ? "bg-purple-600 text-white" : "bg-gray-100 text-gray-700"}`}
+            >
+              {b.charAt(0).toUpperCase() + b.slice(1)}
+            </button>
+          ))}
+        </div>
       </div>
 
       {chunks.length === 0 && (
@@ -84,6 +120,9 @@ export default function HomePage() {
                 {chunk.brand}
               </span>
               <span className="text-xs text-gray-500">{chunk.category}</span>
+              {isUpdatedToday(chunk.updated_at) && (
+                <span className="text-xs font-bold px-2 py-0.5 rounded bg-orange-100 text-orange-700">Updated</span>
+              )}
             </div>
             <span className="text-xs text-gray-400">{new Date(chunk.updated_at).toLocaleDateString()}</span>
           </div>
@@ -116,7 +155,7 @@ export default function HomePage() {
                 />
               </div>
             ) : (
-              <pre className="text-xs bg-gray-50 rounded p-3 whitespace-pre-wrap overflow-auto">{chunk.content}</pre>
+              <HighlightedContent content={chunk.content} />
             )
           )}
 
