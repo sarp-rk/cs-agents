@@ -92,5 +92,4 @@ KB artık `data/knowledge_base/` dosyalarında değil — Supabase `kb_chunks` t
 - History.csv export'u büyük çoğunlukla **missed** chat — Q&A için işe yaramaz
 - Gerçek transcript'ler API ile çekilmeli (`status=attended`)
 - `SUPABASE_URL` secret'ında trailing newline olmamalı — `%0a` DNS hatası verir
-- Preview modunda handoff = "No proper response" — normal davranış, production'da çalışır
 - Deluge'da `urlEncode()` çalışmıyor — `encodeUrl()` kullanılmalı
