@@ -1,0 +1,167 @@
+﻿Konuşma,Kategori,Alt Kategori,Müşterinin İsteği (özet),Çözüldü mü?,Çözüm Yöntemi,Bot Yapabilir mi?,Neden / Ne Gerekir?
+K1,BONUS_TALEP,Bonus talebi,"Müşteri bonus istiyor, 100€ yatırmış",HAYIR,Agent bonus yok dedi,KISMI,Uygunluk kontrolü agent gerektirir
+K2,BILGI_SORUSU,Çekim süresi,Çekim işlemi ne kadar sürer?,EVET,Agent bilgi verdi,EVET,Standart bilgi: 24 saat
+K3,HESAP,Eksik para yatırma,50€ bankadan çekildi ama hesaba yansımadı,KISMI,"İlgili ekibe iletildi, araştırılıyor",HAYIR,Finans ekibi incelemesi gerekiyor
+K4,TEKNIK,Genel teknik sorun,Site çalışmıyor,BELIRSIZ,"Agent karşıladı, detay yok",KISMI,Sorun türü netleştirilmeli
+K5,BONUS_TALEP,YouTuber affiliate bonusu,Krimi YouTuber linki ile free spin talebi; oyun açılmıyor,KISMI,Free spin verildi; teknik sorun devam etti,KISMI,Free spin verme agent gerektirir; teknik sorun cache temizliği ile çözülabilir
+K6,BONUS_TALEP,YouTuber affiliate bonusu,Krimi linki ile 30 free spin talebi,BELIRSIZ,"Agent karşıladı, çözüm belirsiz",KISMI,Affiliate link kontrolü agent gerektirir
+K7,BONUS_TALEP,Affiliate link bonusu,YouTuber linki ile free spin talebi,HAYIR,"Affiliate link kullanılmamış, bonus verilmedi",KISMI,Bot link durumu açıklayabilir
+K8,VIP,VIP bilgisi,VIP için özel domain/link var mı?,EVET,Özel VIP domain yok denildi,EVET,Genel bilgi sorusu
+K9,TEKNIK,Ödeme yapılamıyor,"Sitede ödeme yapılamıyor, hata var",KISMI,Cache/cookie temizliği önerildi,KISMI,"Teknik adımlar bot açıklayabilir, çözüm doğrulama agent gerektirir"
+K10,BONUS_TALEP,Aktivite bazlı bonus,60+31€ yatırım sonrası bonus/free spin talebi,KISMI,"Sistem bonus veremiyor denildi, agent kontrol etti",HAYIR,Hesap aktivite kontrolü gerekiyor
+K11,CASHBACK,Kayıp sonrası bonus,Kayıplar için cashback/bonus talebi,EVET,"50€ bonus, 5x çevrim koşuluyla önerildi",HAYIR,"Discretionary karar, agent gerektirir"
+K12,BONUS_TALEP,Büyük bonus talebi,Büyük bonus istiyor,EVET,30 free spin verildi,HAYIR,Bonus verme aksiyonu agent gerektirir
+K13,HESAP,Hesap kapatma,Çok para kaybettiği için hesap kapatmak istiyor,BELIRSIZ,"Agent özür diledi, aksiyon belirsiz",HAYIR,Hesap kapatma backoffice işlemi
+K14,BONUS_TALEP,Sadakat bonusu,"Çok depozito yaptı, hiç kazanmadı, bonus istiyor",HAYIR,"Koşullar açıklandı, bonus verilmedi",KISMI,Bot koşulları açıklayabilir
+K15,BONUS_TALEP,Bonus talebi,Bonus istiyor,EVET,"10€ bonus, 20x çevrim, 100€ max çekim",HAYIR,Bonus verme agent aksiyonu
+K16,BONUS_TALEP,Depozito sonrası bonus,Son depozitolar için bonus talebi,BELIRSIZ,"Agent kontrol edecek, sonuç belirsiz",HAYIR,Hesap kontrolü gerekiyor
+K17,BONUS_SORUN,Free spin iptali,"150 free spin nerede, göremiyorum",EVET,Çekim yapınca bonus iptal olduğu açıklandı,EVET,Bot standart kural açıklayabilir
+K18,BONUS_TALEP,Bonus uygunluğu,Bonus hakkı var mı?,BELIRSIZ,"Agent kontrol edecek, sonuç belirsiz",HAYIR,Hesap kontrolü gerekiyor
+K19,WITHDRAWAL_BEKLEYEN,Çekim onayı,Çekimini onaylatmak istiyor,EVET,Agent işlemi tamamladı,HAYIR,Çekim onayı backoffice işlemi
+K20,BONUS_SORUN,Free spin alınmadı,Depozito ile seçilen 200 free spin görünmüyor,BELIRSIZ,"Agent kontrol ediyor, sonuç belirsiz",HAYIR,Bonus kredileme agent gerektirir
+K21,WITHDRAWAL_LIMIT,Limit artırımı,Depozito limitini 20€ artırmasını istiyor,BELIRSIZ,"Agent karşıladı, detay yok",HAYIR,Limit değişikliği backoffice işlemi
+K22,WITHDRAWAL_LIMIT,Limit artırımı,Depozito limitini tekrar 20€ artırmasını istiyor,EVET,Agent işlemi yaptı,HAYIR,Limit değişikliği backoffice işlemi
+K23,BILGI_SORUSU,Çekim süresi + KYC durumu,Çekim süresi ve hesap doğrulama durumu sorgusu,EVET,"24 saat bilgisi verildi, KYC kontrol edildi",KISMI,Süre bilgisi bot verebilir; KYC durumu agent kontrol eder
+K24,WITHDRAWAL_BEKLEYEN,Çekim hızlandırma,Çekimin bugün yapılmasını istiyor,KISMI,"Ekibe iletildi, garanti yok",HAYIR,Çekim hızlandırma backoffice gerektirir
+K25,BONUS_SORUN,Bonus iptal,Depozito bonusu neden iptal edildi?,BELIRSIZ,"Agent kontrol edecek, sonuç belirsiz",HAYIR,Hesap inceleme gerekiyor
+K26,BONUS_TALEP,Bonus talebi,Bonus istiyor,BELIRSIZ,Agent kontrol ediyor,HAYIR,Hesap kontrolü gerekiyor
+K27,VIP,VIP statüsü belgesi,VIP olduğunu belgeleyen doküman istiyor (başka casino için),EVET,VIP olduğu ve %12 cashback aldığı açıklandı,KISMI,VIP statüsü bilgisi agent verir; resmi belge backoffice
+K28,BONUS_TALEP,Bonus talebi,Bonus istiyor,BELIRSIZ,Agent kontrol edecek,HAYIR,Hesap kontrolü gerekiyor
+K29,VIP,VIP free spin + çekim,Her Cuma free spin olması gerekiyor ama gelmedi; 1400€ çekim talebi,KISMI,VIP yöneticisine yönlendirildi; çekim kontrol edildi,HAYIR,VIP avantajları ve çekim aksiyonu agent/VIP ekibi gerektirir
+K30,BILGI_SORUSU,Self-exclusion ve çekim,24 saatlik duraklama sırasında çekim işlemi etkilenir mi?,EVET,Çekimin etkilenmeyeceği açıklandı; hesap kilitlendi/açıldı,KISMI,Bot kural açıklayabilir; hesap kilitleme/açma agent gerektirir
+K31,BONUS_TALEP,Depozito sonrası bonus,200€+ yatırım sonrası bonus talebi,EVET,Bonus verildi,HAYIR,Bonus verme agent aksiyonu
+K32,WITHDRAWAL_LIMIT,Limit artırımı,Günlük limit 40€'ya çıkarıldı ama uygulanmadı,EVET,Agent limiti tekrar 40€ yaptı,HAYIR,Limit değişikliği backoffice işlemi
+K33,BONUS_SORUN,Bonus oyun erişimi,"Bonus oyunu açılmıyor, farklı oyuna taşıma talebi",KISMI,Farklı oyuna free spin verildi; cache temizliği önerildi,KISMI,Cache temizliği bot açıklayabilir; bonus değiştirme agent gerektirir
+K34,BONUS_SORUN,Bonus türü açıklaması,"Neden farklı bonus verildi, her zamanki bonus neden yok?",EVET,Aktivite yetersizliği nedeniyle istisnai bonus verildiği açıklandı,KISMI,Bot koşulları açıklayabilir; hesap kontrolü agent gerektirir
+K35,BONUS_TALEP,Kayıp sonrası bonus + hesap kapatma,Bug nedeniyle bonus talebi; yüksek çevrim koşulundan şikayet; hesap kapatmak istedi,KISMI,"50€ bonus verilmiş, VIP'e yönlendirildi",HAYIR,"Discretionary karar, agent/VIP gerektirir"
+K36,WITHDRAWAL_BEKLEYEN,Hesap doğrulama + çekim,Hesabım çekim için geçerli mi? Çekim süresi?,EVET,"Hesap doğrulandı, 24 saat bilgisi verildi",KISMI,Süre bilgisi bot verebilir; doğrulama kontrolü agent gerektirir
+K37,CASHBACK,Cashback + bonus,"Cashback var, bonus da istiyor",EVET,"20€ bonus verildi (20x, 200€ max)",HAYIR,Bonus verme agent aksiyonu
+K38,HESAP,Eksik para yatırma,50€ bankadan çekildi ama hesaba yansımadı,KISMI,"Ekrana görüntü istendi, araştırılıyor",HAYIR,Ekran görüntüsü + finans ekibi incelemesi gerekiyor
+K39,BONUS_TALEP,Bonus talebi,Bonus istiyor,BELIRSIZ,Agent karşıladı,HAYIR,Hesap kontrolü gerekiyor
+K40,BONUS_TALEP,Bonus uygunluğu,Bonus hakkı var mı?,BELIRSIZ,Agent karşıladı,HAYIR,Hesap kontrolü gerekiyor
+K41,VIP,VIP Telegram iletişimi,"Telegram VIP'e mesaj attı, yanıt yok; VIP'in aramasını istiyor",KISMI,VIP ekibine iletildi,HAYIR,VIP koordinasyonu agent gerektirir
+K42,BONUS_TALEP,Depozito bonusu detayı,100€ için 200 free spin hakkı var mı? Favori oyuna eklenebilir mi?,KISMI,Ekran görüntüsü istendi,KISMI,Bot genel bilgi verebilir; onaylama ve uygulama agent gerektirir
+K43,VIP,VIP agent iletişimi,Daniel ile görüşmek/aranmak istiyor,KISMI,Daniel'a mesaj iletildi,HAYIR,VIP agent koordinasyonu gerekiyor
+K44,BONUS_TALEP,Bonus talebi,Bonus istiyor,BELIRSIZ,Agent karşıladı,HAYIR,Hesap kontrolü gerekiyor
+K45,BONUS_TALEP,Kayıp sonrası bonus + happy hour sorunu,"Çok depozito, hiç kazanç yok; happy hour free spin çalışmıyor",BELIRSIZ,Agent kontrol edecek,HAYIR,Hesap kontrolü + teknik inceleme gerekiyor
+K46,BONUS_TALEP,Büyük depozito sonrası bonus,1000€+1000€ yatırım için bonus talebi,BELIRSIZ,Agent kontrol ediyor,HAYIR,Hesap kontrolü gerekiyor
+K47,BONUS_TALEP,Kayıp sonrası bonus,"Şanssız, küçük bonus istiyor",BELIRSIZ,Agent karşıladı,HAYIR,Hesap kontrolü gerekiyor
+K48,BONUS_TALEP,Doğum günü bonusu,Doğum günü bonusu neden gelmedi?,KISMI,Agent kontrol ediyor; başka casinoda geldiğini belirtti,HAYIR,Hesap ve kampanya kontrolü agent gerektirir
+K49,BONUS_TALEP,Bonus talebi,Bonus istiyor,BELIRSIZ,Agent kontrol ediyor,HAYIR,Hesap kontrolü gerekiyor
+K50,WITHDRAWAL_LIMIT,Çekim limiti açıklaması,Neden 802€ yerine 552€ çekebildi?,EVET,Bonus kuralları (10x depozito max cash out) açıklandı; kalan 250€ çekilebilir,KISMI,Bot kural açıklayabilir; hesap kontrolü agent gerektirir
+K51,WITHDRAWAL_BEKLEYEN,Çekim durumu + ödeme sorgusu,"300€ çekim yapıldı, bugün işlenecek mi? Hizmet ücretli mi?",KISMI,Finans ekibiyle iletişim kuruldu; ücretsiz olduğu söylendi,HAYIR,Çekim takibi backoffice gerektirir
+K52,CASHBACK,VIP cashback + agent iletişimi,Daniel'ın vaat ettiği %40 cashback; Lars/Malia ile görüşme talebi,KISMI,Cuma cashback bilgisi verildi; Lars'a mesaj iletildi,HAYIR,Discretionary cashback ve VIP agent gerektirir
+K53,HESAP,Bakiye düşümü açıklaması,200€ bakiye neden silindi? Bonus depozitosundan kazanç kuralları,EVET,Bonus kuralı nedeniyle 200€ düşüldüğü açıklandı,KISMI,Bot bonus kurallarını açıklayabilir; hesap detayı agent gerektirir
+K54,BONUS_SORUN,Free spin erişim sorunu,Cursed Sea free spin açılmıyor,EVET,Farklı oyuna (Lion Gem's) 20 free spin verildi,KISMI,Cache temizliği bot açıklayabilir; oyun değiştirme agent gerektirir
+K55,BONUS_TALEP,Depozito sonrası bonus,"Çok depozito, 50-100€ bonus talebi",BELIRSIZ,Agent kontrol edecek,HAYIR,Hesap kontrolü gerekiyor
+K56,BONUS_TALEP,Uygulama/affiliate bonusu,Uygulama kurulumu/affiliate için free spin almadı,EVET,20 free spin verildi,HAYIR,Bonus kredileme agent aksiyonu
+K57,HESAP,Hesap kapatma talebi,Bonusların az ödediğinden şikayet; hesap kapatmak istiyor,KISMI,"Agent özür diledi, yeni bonus önerdi; hesap kapatma net olmadı",HAYIR,Hesap kapatma + bonus kararı agent/backoffice gerektirir
+K58,BONUS_TALEP,Bonus talebi,Bonus istiyor,BELIRSIZ,Agent kontrol edecek,HAYIR,Hesap kontrolü gerekiyor
+K59,BONUS_SORUN,Çekim tutarı uyuşmazlığı,"50€ çekmek istedi, 41€ çekebiliyor; bonus çevrim durumu",EVET,Aktif bonus ve çevrim koşulları açıklandı,KISMI,Bot bonus/çevrim açıklayabilir; hesap detayı agent gerektirir
+K60,BONUS_SORUN,Free spin kazanç çekim kuralı,"20 free spin ile 150€ kazandı, çevrim tamamlandı, tümünü çekebilir mi?",EVET,30€ çekilebilir olduğu söylendi; kazanç kuralları açıklandı,KISMI,Bot kuralları açıklayabilir; tutar doğrulama agent gerektirir
+K61,HESAP,Hesap silme,Hesabını silmek istiyor,BELIRSIZ,Agent karşıladı,HAYIR,Hesap silme backoffice işlemi
+K62,BONUS_TALEP,Wagering olmadan bonus,Happy Hour 70 free spin var; wagering olmadan bonus istiyor,KISMI,Kontrol edildi,HAYIR,Discretionary karar agent gerektirir
+K63,BONUS_TALEP,Büyük depozito sonrası bonus,680€ yatırım için iyi bonus talebi,EVET,50€ bonus verildi,HAYIR,Bonus verme agent aksiyonu
+K64,BONUS_TALEP,Depozitosuzsuz bonus,Depozitosuzsuz bonus istiyor,HAYIR,Sistem bonus veremedi,KISMI,Bot uygunluk kurallarını açıklayabilir
+K65,VIP,VIP agent iletişimi,Daniel ile görüşmek istiyor,BELIRSIZ,Agent kontrol ediyor,HAYIR,VIP agent koordinasyonu gerekiyor
+K66,WITHDRAWAL_BEKLEYEN,Çekim bekliyor,Çekim talebi hâlâ beklemede,BELIRSIZ,Agent karşıladı,HAYIR,Çekim durumu backoffice kontrolü gerekiyor
+K67,BONUS_SORUN,Bonus aktivasyonu,%150'ye kadar 1500€ bonus aktive olmadı,KISMI,"Ekran görüntüsü istendi (agent Esperanto yazdı, iletişim sorunu)",HAYIR,Bonus aktivasyonu ve doğrulama agent gerektirir
+K68,BONUS_SORUN,Free spin erişim sorunu,The Bandit oyununda bonus oynayamadı,BELIRSIZ,Agent kontrol edecek,HAYIR,Bonus ve oyun erişimi agent gerektirir
+K69,BONUS_TALEP,Bonus uygunluğu,Bonus hakkı var mı?,BELIRSIZ,Agent karşıladı,HAYIR,Hesap kontrolü gerekiyor
+K70,HESAP,Çoklu hesap - bonus ihlali,"150€ kazancını çekemedi, bakiye sıfırlandı; multi-hesap tespiti",HAYIR,Çoklu hesap ve bonus ihlali nedeniyle işlem yapılamadı,HAYIR,Compliance/backoffice kararı gerekiyor
+K71,HESAP,Hesap kilit açma,"Hesabı kilitli, açılmasını istiyor",BELIRSIZ,Agent karşıladı,HAYIR,Hesap kilit açma backoffice işlemi
+K72,BONUS_TALEP,Wagering olmadan free spin,Gates of Olympus Super Scatter'da çevrimsiz free spin talebi,BELIRSIZ,Agent karşıladı,HAYIR,Discretionary karar agent gerektirir
+K73,BONUS_SORUN,Free spin erişim sorunu,Cursed Sea 50 free spin oyunu açılmıyor,KISMI,Cache temizliği önerildi,KISMI,Cache temizliği bot açıklayabilir; bonus erişimi agent gerektirir
+K74,BONUS_TALEP,Nakit bonus talebi,Nakit bonus istiyor,HAYIR,Nakit bonus şu an mevcut değil,KISMI,Bot kural açıklayabilir
+K75,WITHDRAWAL_BEKLEYEN,Acil çekim talebi,Çekiminin acil işlenmesini istiyor,KISMI,"Ekibe iletildi, garanti yok",HAYIR,Çekim hızlandırma backoffice gerektirir
+K76,KYC,Hesap doğrulama durumu,Hesabının doğrulandığını belgelemek istiyor,EVET,Hesabın doğrulandığı onaylandı,HAYIR,KYC durumu agent/backoffice kontrolü
+K77,BONUS_TALEP,Bonus uygunluğu,Bonus hakkı var mı?,HAYIR,"Aktivite yetersiz, bonus verilemedi",KISMI,Bot koşulları açıklayabilir
+K78,BONUS_TALEP,Doğum günü bonusu,Casino erişim sorunundan dolayı kaçırdığı doğum günü bonusu,BELIRSIZ,Agent karşıladı,HAYIR,Hesap ve kampanya kontrolü agent gerektirir
+K79,BONUS_TALEP,Depozitosuzsuz bonus,Depozitosuzsuz bonus istiyor,BELIRSIZ,Agent kontrol ediyor,HAYIR,Hesap kontrolü gerekiyor
+K80,HESAP,Hesap kilit açma + çekim,"24 saatlik duraklama bitti, hesap açılsın; çekim durumu",EVET,Hesap açıldı; çekim 24 saat içinde işlenecek,HAYIR,Hesap açma ve çekim durumu backoffice gerektirir
+K81,WITHDRAWAL_BEKLEYEN,Çekim gecikme şikayeti,"Çekimleri zamanında işlenmiyor, sadık müşteri",KISMI,"Agent anlayış gösterdi, çözüm taahhüt edilemedi",HAYIR,Çekim gecikme incelemesi backoffice gerektirir
+K82,BONUS_TALEP,Cashback + depozitosuzsuz bonus,Cashback sorgusu ve depozitosuzsuz bonus talebi,EVET,Cashback yok; bonus kontrol edildi,HAYIR,Hesap kontrolü agent gerektirir
+K83,BONUS_TALEP,Depozitosuzsuz bonus,Depozitosuzsuz bonus hakkı olduğunu düşünüyor,BELIRSIZ,Agent kontrol edecek,HAYIR,Hesap kontrolü gerekiyor
+K84,TEKNIK,Ödeme yöntemi sorunu,Kart limiti doldu; çekim yerine ödeme olarak görüntüleniyor,KISMI,Agent teknik detayları araştırdı,HAYIR,Ödeme altyapısı teknik inceleme gerekiyor
+K85,WITHDRAWAL_BEKLEYEN,VIP acil çekim,"VIP müşteri, çekiminin acil işlenmesini istiyor",KISMI,Ödeme ekibine iletildi,HAYIR,VIP çekim önceliklendirme backoffice gerektirir
+K86,BONUS_TALEP,Kayıp sonrası bonus/free spin,"Dün kaybetti, bonus veya cashback istiyor",HAYIR,Minimum 100€ aktivite koşulu sağlanmamış,KISMI,Bot aktivite koşulunu açıklayabilir
+K87,BONUS_TALEP,Depozito sonrası bonus,250€ yatırım için bonus talebi,EVET,"Bonus verildi, önceki bonus hesaba katıldı açıklandı",HAYIR,Bonus hesaplama agent açıklaması gerekiyor
+K88,HESAP,Bakiye düşümü açıklaması,"1436€ bakiye neden 216€'ya düştü, işlem geçmişinde ""balance correction""",KISMI,Uzmana transfer edildi,HAYIR,Backoffice inceleme gerekiyor
+K89,BONUS_TALEP,Büyük bonus talebi,"700€ yatırdı, daha büyük bonus istiyor",EVET,"50€, 10x, 500€ max bonus verildi",HAYIR,Bonus verme agent aksiyonu
+K90,BONUS_TALEP,Bonus talebi,Bonus istiyor,BELIRSIZ,Agent karşıladı,HAYIR,Hesap kontrolü gerekiyor
+K91,VIP,VIP agent iletişimi,VIP agent ile iletişim/telefon numarası soruyor,EVET,Telegram VIP'e bağlandı,HAYIR,VIP agent koordinasyonu gerekiyor
+K92,BONUS_TALEP,Kayıp sonrası büyük bonus,"200€+ yatırım, büyük bonus istiyor",KISMI,"Son bonus yakın, agent tekrar kontrol etti",HAYIR,Hesap aktivite kontrolü agent gerektirir
+K93,BONUS_TALEP,Depozito sonrası bonus,Depozitolar için 20-50€ bonus talebi,HAYIR,Nakit bonus için uygun değil,KISMI,Bot uygunluk koşullarını açıklayabilir
+K94,TEKNIK,Depozito ödeme yöntemi sorunu,Depozito çekim olarak görünmesi gerekiyor (kart limiti aşımı),EVET,Müşteri kendi halletti,KISMI,Bot genel öneride bulunabilir; çözüm kullanıcı tarafından bulundu
+K95,BONUS_TALEP,Bonus talebi,Bonus istiyor,BELIRSIZ,Agent kontrol ediyor,HAYIR,Hesap kontrolü gerekiyor
+K96,WITHDRAWAL_BEKLEYEN,Çekim durumu,Çekim hâlâ beklemede,EVET,İşleme alındığı görüldü,HAYIR,Çekim durumu backoffice kontrolü gerekiyor
+K97,BONUS_TALEP,Ticari jest,Depozitolar için jest/bonus istiyor,BELIRSIZ,Agent karşıladı,HAYIR,Hesap kontrolü gerekiyor
+K98,CASHBACK,Cashback bilgisi + bonus,Cashback miktarı ve bonus uygunluğu sorgusu,EVET,Cuma cashback bilgisi verildi; çekim beklerken bonus verilemez açıklandı,KISMI,Bot cashback açıklayabilir; bonus verme agent gerektirir
+K99,BONUS_TALEP,Bonus uygunluğu,Herhangi bir bonusu var mı?,EVET,"15€ bonus, 15x, 150€ max verildi",HAYIR,Bonus verme agent aksiyonu
+K100,WITHDRAWAL_BEKLEYEN,Çekim hızlandırma + cashback,Çekimin hızlandırılması ve cashback miktarı sorgusu,KISMI,Çekim ekibine iletildi; cashback cuma açıklandı,HAYIR,Çekim hızlandırma backoffice gerektirir
+K101,BONUS_TALEP,Büyük/çevrimsiz bonus talebi,"300€ çevrimsiz bonus istiyor, 20€ teklifi reddetti",KISMI,"50€, 10x bonus önerildi; müşteri vazgeçti",HAYIR,Discretionary karar agent gerektirir
+K102,BONUS_SORUN,Bonus kazanç açıklaması,45€ bonus düşümü görüyor ama sadece 26€ aldı,EVET,"Bonus tamamlandı, 45€ bonus bakiyesinden gerçek bakiyeye aktarıldı sonra kaybedildi",KISMI,Bot bonus mekanizmasını açıklayabilir
+K103,WITHDRAWAL_BEKLEYEN,Çekim durumu (1300€+500€),"İki çekim beklemede, tatil öncesi işlenmesini istiyor",KISMI,"Ekibe iletildi, beklemede durumu onaylandı",HAYIR,Çekim önceliklendirme backoffice gerektirir
+K105,WITHDRAWAL_BEKLEYEN,İptal Edilemeyen Çekim,200€ çekim talebini iptal etmek istiyor ama sistem donuyor,HAYIR,Teknik ekibe iletildi,HAYIR,Çekim iptali sistem tarafında müdahale gerektirir
+K106,TEKNIK,Hesap Erişim Hatası,"Hesabında hata mesajı alıyor, genel sorun olup olmadığını soruyor",HAYIR,Üst yöneticiye (Daniel) bağlanmaya çalışıldı,HAYIR,Teknik sorun tespiti ve yönetici müdahalesi gerekir
+K107,BONUS_SORUN,Free Spin Oyun Adı,Verilen ücretsiz çevirimlerin hangi oyuna ait olduğunu bilmiyor,KISMI,"Oyunlar için hesap incelendi, net yanıt verilmedi",KISMI,Hesap üzerinden aktif bonus oyun adı bilgisi sorgulanabilir
+K108,BONUS_TALEP,Depozitsiz Bonus,Depozitsiz bonus talep ediyor,HAYIR,Yanıt verilmedi,KISMI,Uygunluk kontrolü yapılabilir ancak bonus verme kararı insana ait
+K109,BONUS_TALEP,Genel Bonus Talebi,Bonus talep ediyor,HAYIR,Yanıt verilmedi,KISMI,Uygunluk kontrolü yapılabilir ancak bonus verme kararı insana ait
+K110,BONUS_TALEP,Genel Bonus Talebi,Bonus talep ediyor,HAYIR,Yanıt verilmedi,KISMI,Uygunluk kontrolü yapılabilir ancak bonus verme kararı insana ait
+K111,BONUS_TALEP,Wagersiz Free Spin,Gates of Olympus Super Scatter'da wagersiz ücretsiz çevirim talep ediyor,KISMI,VIP ekibine yönlendirildi,KISMI,VIP yönlendirmesi bot yapabilir; bonus verme kararı insana ait
+K112,BONUS_SORUN,Bonus İptali,21€ bonusun kaldırılmasını istiyor,EVET,Bonus kaldırıldı (ima ediliyor),KISMI,Bonus iptali sistem erişimi gerektirir
+K113,BILGI_SORUSU,Ödeme Yöntemi,Paysafecard ile para yatırılıp yatırılamayacağını soruyor,EVET,Şu an kullanılamadığı bilgisi verildi,EVET,Mevcut ödeme yöntemleri bilgisi bot tarafından sağlanabilir
+K114,TEKNIK,Kayıp Para/Yatırım,30€ yatırdı ama hesabına geçmedi,HAYIR,Hesap incelemeye alındı,HAYIR,Ödeme kaydı kontrolü ve iade işlemi insan müdahalesi gerektirir
+K115,BONUS_TALEP,Genel Bonus Talebi,Bonus talep ediyor,HAYIR,"Hesap inceleniyor, sonuç belirtilmedi",KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K116,BONUS_SORUN,E-posta ile Vaat Edilen Bonus,E-posta ile bildirilen 30€ bonus hesabına yansımamış,EVET,"Ekran görüntüsü istendi, bonus kredilendirildi",KISMI,Doğrulama adımı bot yapabilir; kredi işlemi insan onayı gerektirir
+K117,BONUS_TALEP,Genel Bonus Talebi,Bonus talep ediyor,HAYIR,"Hesap inceleniyor, sonuç belirtilmedi",KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K118,HESAP,Hesap Açma,Kapalı hesabının açılmasını istiyor,HAYIR,"Teşekkür edildi, sonuç belirtilmedi",HAYIR,Hesap açma işlemi sorumluluk beyanı ve insan onayı gerektirir
+K119,BONUS_TALEP,Depozit Öncesi Bonus,Depozit yapmadan önce bonus talep ediyor,HAYIR,"Hesap inceleniyor, sonuç belirtilmedi",KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K120,BONUS_TALEP,Wagersiz Yüksek Bonus,"300€ wagersiz bonus talep ediyor, kabul etmeyince hesap kapatmak istiyor",KISMI,"50€ 10x wagering bonus teklif edildi, müşteri reddetti ama yine de kredilendi",HAYIR,Müzakere ve özel bonus kararı insan gerektirir
+K121,BONUS_TALEP,Doğum Günü Bonusu,Doğum günü için ücretsiz çevirim talep ediyor,HAYIR,Doğum günü gelmeden verilemeyeceği söylendi,EVET,Bot doğum günü tarihini kontrol edip politikayı açıklayabilir
+K122,TEKNIK,Bakiye Kaybı,"Oyun sırasında bakiyesi düştü, sebep soruyor",HAYIR,Yanıt verilmedi,HAYIR,Bakiye geçmişi incelemesi insan müdahalesi gerektirir
+K123,TEKNIK,Para Yatırma Sorunu,"Para yatıramıyor, site sorunu olup olmadığını soruyor",EVET,Teknik ekibin çalıştığı bilgisi verildi,KISMI,Bot genel sistem durumu bilgisi verebilir
+K124,TEKNIK,Genel Teknik Sorun Takibi,Teknik sorunla ilgili güncelleme ve yöneticiyle görüşme talep ediyor,KISMI,"Teknik ekibin çalıştığı iletildi, yönetici bilgilendirildi",HAYIR,Üst yönetici koordinasyonu insan gerektirir
+K125,BONUS_TALEP,Bonus Uygunluk Sorgusu,Bonus hakkı olup olmadığını soruyor,HAYIR,Yanıt verilmedi,KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K126,BONUS_TALEP,Genel Bonus Talebi,85€ bonus alındı; ayrıca yeni bonus talep ediyor,EVET,85€ bonus 20x wagering ile kredilendi,KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K127,BILGI_SORUSU,Çekim Süresi,Çekiminin ne zaman işleneceğini soruyor,EVET,"24 iş günü içinde işleneceği, hesabın doğrulanmış olması gerektiği açıklandı",EVET,Bot standart çekim süresi bilgisi verebilir
+K128,BONUS_TALEP,Free Spin + Depozit Öncesi Bonus,Belirli oyun için free spin ve depozit öncesi bonus talep ediyor,KISMI,"50 free spin 5x wagering ile verildi, ikinci talep inceleniyor",KISMI,Uygunluk kontrolü bot yapabilir; oyun belirleme ve kredi işlemi insan gerektirir
+K129,HESAP,Hesap Kapatma + Bonus Talebi,Hesabını kapatmak istiyor; bonus talebi var,KISMI,"30€ bonus 5x wagering ile verildi, hesap kapatma süreci başlatıldı",HAYIR,Hesap kapatma ve özel bonus müzakeresi insan gerektirir
+K130,BILGI_SORUSU,Ortaklık İletişim Bilgisi,Potansiyel ortaklık için iletişim bilgisi istiyor,HAYIR,Yanıt verilmedi,EVET,Bot ortaklık e-posta/telegram bilgilerini paylaşabilir
+K131,KYC,Belge Doğrulama,KYC belgelerinin iletilip iletilmediğini ve doğrulanıp doğrulanmadığını soruyor,KISMI,"Belge alındı, çekim için tatil/hafta sonu kısıtlaması belirtildi",KISMI,Bot belge durumu sorgulayabilir; inceleme insan gerektirir
+K132,BONUS_TALEP,Free Spin + Depozitsiz Bonus,Belirli oyun için free spin ve 100 depozitsiz free spin talep ediyor,KISMI,50 free spin 5x wagering ile verildi,KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K133,BONUS_TALEP,Depozitsiz Bonus Uygunluğu,Depozitsiz bonus hakkı olup olmadığını soruyor,HAYIR,"Hesap inceleniyor, sonuç belirtilmedi",KISMI,Uygunluk kontrolü bot yapabilir; karar insana ait
+K134,CASHBACK,Cashback Alınmama Nedeni,Cuma günü cashback alamadığını soruyor,EVET,Cuma'nın henüz gelmediği açıklandı (gün karışıklığı giderildi),EVET,Bot cashback takvimi ve koşullarını açıklayabilir
+K135,BONUS_TALEP,Depozit Sonrası Bonus,Depozitlerine karşılık bonus talep ediyor,HAYIR,"Hesap inceleniyor, sonuç belirtilmedi",KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K136,HESAP,Hesap Açma + Bonus Talebi,Hesabının açılmasını ve küçük bonus talep ediyor,HAYIR,"Hesap açma için karşılama yapıldı, sonuç belirtilmedi",HAYIR,Hesap açma ve bonus değerlendirmesi insan gerektirir
+K137,BONUS_SORUN,Karşılama Bonusu Alınmadı,%120 hoşgeldin bonusu ve 50 free spin hesabına gelmedi,EVET,"Nakit bonus kredilendi, free spin ayrıca verileceği belirtildi",KISMI,Bonus doğrulaması bot yapabilir; kredilendirme insan gerektirir
+K138,BONUS_TALEP,Genel Bonus Talebi,Bonus talep ediyor,KISMI,30€ bonus 20x wagering ile verildi,KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K139,BONUS_TALEP,Ekstra Bonus + Cashback Sorgulama,"Ek bonus talep ediyor, cashback tutarını soruyor",KISMI,"30€ bonus 10x ile teklif edildi, ek bonus verilmedi",HAYIR,Özel bonus müzakeresi ve cashback hesaplama insan gerektirir
+K140,BILGI_SORUSU,Çekim Süresi,200€ çekim için bekleme süresini soruyor,HAYIR,"Karşılama yapıldı, yanıt verilmedi",EVET,Bot standart çekim süresi bilgisi verebilir
+K141,BONUS_SORUN,Eksik Kayıt Free Spin,Kayıt sırasında verilen 50 free spin nerede soruyor,KISMI,"Hesapta 20 free spin olduğu görüldü, 50 yerine 20 olduğu bildirildi",KISMI,Bot aktif bonus/free spin durumu sorgulayabilir
+K142,BONUS_TALEP,Bonus Uygunluğu,Bonus hakkı olup olmadığını soruyor,KISMI,"Son bonusun yakın zamanda kullanıldığı, minimum 55€ yeni depozit gerektiği açıklandı",EVET,Bot bonus uygunluk koşullarını ve gerekli depozit miktarını açıklayabilir
+K143,WITHDRAWAL_BEKLEYEN,Çekim Süresi Onayı,"219,25€ çekiminin 1 gün içinde işlenip işlenmeyeceğini soruyor",HAYIR,"Karşılama yapıldı, sonuç belirtilmedi",EVET,Bot standart çekim süresi bilgisi verebilir
+K144,BONUS_SORUN,E-posta ile Vaat Edilen 100€ Bonus,"100€ bonus içeren e-posta aldı, hesabına yansımadı",KISMI,"Hesap inceleniyor, VIP ekibine de yönlendirme önerildi",KISMI,E-posta doğrulaması bot yapabilir; kredilendirme insan gerektirir
+K145,TEKNIK,Oyun Bahis Butonu Çalışmıyor,Buffalo Blitz Live Spain'de bahis butonu çalışmıyor,EVET,"Cache/cookie temizleme önerildi, sorun çözüldü",KISMI,Bot temel teknik adımları önerebilir; kalıcı sorun için insan gerekir
+K146,BONUS_TALEP,Yüksek Depozit Sonrası Bonus,3000€+ depozit yaptıktan sonra ödül/bonus talep ediyor,HAYIR,"Hesap inceleniyor, sonuç belirtilmedi",KISMI,Uygunluk kontrolü bot yapabilir; özel bonus kararı insana ait
+K147,BONUS_TALEP,Cashback + Bonus Uygunluğu,Yeni depozit sonrası bonus ve ertesi günkü cashback hakkı soruyor,KISMI,"Son bonustan bu yana yeterli depozit olmadığı açıklandı, inceleme devam ediyor",KISMI,Bot cashback ve bonus uygunluk koşullarını açıklayabilir
+K148,HESAP,Hesap Kapatma (Bağımlılık),Kumar bağımlılığı nedeniyle hesabını kapatmak istiyor,HAYIR,"Karşılama yapıldı, sonuç belirtilmedi",KISMI,Bot sorumlu oyun politikasını açıklayabilir; hesap kapatma insan onayı gerektirir
+K149,HESAP,Hesap Kalıcı Kapatma,Para kaybettiği için hesabını kalıcı olarak kapatmak istiyor,HAYIR,"Karşılama yapıldı, sonuç belirtilmedi",KISMI,Bot sorumlu oyun politikasını açıklayabilir; hesap kapatma insan onayı gerektirir
+K150,BONUS_SORUN,Hoşgeldin Bonusu Free Spin Tamamlama,Daha önce verilen hoşgeldin bonusuna ek 50 free spin talep ediyor,KISMI,Hesap inceleniyor,KISMI,Bot bonus geçmişini sorgulayabilir; kredilendirme insan gerektirir
+K151,BONUS_TALEP,Depozit Sonrası Bonus,Depozitlerine karşılık bonus talep ediyor,HAYIR,"Hesap inceleniyor, sonuç belirtilmedi",KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K152,BONUS_TALEP,Depozit Öncesi Bonus,Depozit yapmadan önce bonus talep ediyor,KISMI,30€ bonus 20x wagering ile verildi,KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K153,BONUS_TALEP,Bonus Uygunluk Sorgusu,Bonus hakkı olup olmadığını soruyor,HAYIR,"Karşılama yapıldı, yanıt verilmedi",KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K154,BONUS_SORUN,Doğum Günü Bonusu Talebi,E-posta ile bildirilen 150€ doğum günü bonusunu talep ediyor,EVET,150€ bonus 10x wagering ile kredilendi,KISMI,E-posta doğrulaması bot yapabilir; kredilendirme insan gerektirir
+K155,HESAP,Hesap Açma,Kapalı hesabının açılmasını istiyor,EVET,"Hesap açıldı, sorumluluk beyanı alındı",KISMI,Bot sorumluluk beyanı alabilir; hesap açma insan onayı gerektirir
+K156,WITHDRAWAL_BEKLEYEN,Tatil Günü Çekim İşlemi,Çekiminin o gün veya ertesi gün (tatil) işlenip işlenmeyeceğini soruyor,EVET,Tatil günü gecikmesi olabileceği açıklandı,EVET,Bot tatil günü çekim politikasını açıklayabilir
+K157,BONUS_TALEP,Depozit Öncesi Bonus,Depozit yapmadan önce bonus talep ediyor,HAYIR,"Karşılama yapıldı, yanıt verilmedi",KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K158,BONUS_TALEP,Depozitsiz Bonus Koşulları,Depozitsiz bonus almak için ne yapması gerektiğini soruyor,EVET,Bonus aktivitesi koşulları açıklandı,EVET,Bot depozitsiz bonus uygunluk koşullarını açıklayabilir
+K159,BONUS_TALEP,Genel Bonus Talebi,Bonus talep ediyor,HAYIR,"Karşılama yapıldı, yanıt verilmedi",KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K160,BONUS_TALEP,Reddedilen Bonus Talebi,"Bonus talep etti, reddedildi",HAYIR,Özür dilendi,KISMI,Bot uygunluk kontrolü yapabilir ve ret sebebini açıklayabilir
+K161,BONUS_TALEP,Genel Bonus Talebi,Bonus talep ediyor,HAYIR,Bonus uygun olmadığı söylendi,EVET,Bot uygunluk kontrolü ve minimum depozit koşulunu açıklayabilir
+K162,BILGI_SORUSU,Cashlib Depozit + Çekim Süresi,Cashlib ile para yatırılıp yatırılamayacağını ve çekim süresini soruyor,EVET,24 iş saati içinde işleneceği açıklandı,EVET,Bot ödeme yöntemleri ve çekim süresi bilgisi verebilir
+K163,BONUS_TALEP,Depozitsiz Bonus Uygunluğu,Depozitsiz bonus hakkı olup olmadığını soruyor,HAYIR,"Hesap incelendi, bonus uygun değil",EVET,Bot uygunluk kontrolü ve koşulları açıklayabilir
+K164,TEKNIK,Hacksaw Gaming Oyun Açılmıyor,Hacksaw Gaming oyunları mobilde açılmıyor,KISMI,"Adımlar önerildi, teknik ekibe iletildi",KISMI,Bot temel teknik adımları önerebilir; kalıcı sorun için insan gerekir
+K165,BONUS_TALEP,Kayıp Sonrası Bonus,Kayıplarından dolayı bonus talep ediyor,HAYIR,Yeni aktivite sonrası tekrar kontrol edilebileceği söylendi,KISMI,Bot uygunluk koşullarını açıklayabilir; bonus verme kararı insana ait
+K166,BONUS_TALEP,Yüksek Depozit Sonrası Depozitsiz Bonus,150-200€ depozit yapmasına rağmen depozitsiz bonus talep ediyor,HAYIR,"Karşılama yapıldı, yanıt verilmedi",KISMI,Uygunluk kontrolü bot yapabilir; bonus verme kararı insana ait
+K167,CASHBACK,Cashback Tutarı ve Saati,Cashback'i ne zaman ve ne kadar alacağını soruyor,KISMI,E-posta ile bilgilendirme yapılacağı söylendi,KISMI,Bot cashback zamanlaması hakkında genel bilgi verebilir
