@@ -1,6 +1,6 @@
 // ============================================================
 // RomusCasino / CaptainSlots - AI Support Bot (Deluge Script)
-// Version: V27 — retry on overload, token_usage logging, transfer fix
+// Version: V28 — agent online hours check, offline mode
 // Paste into Zoho SalesIQ Zobot > Code Block
 // ============================================================
 SCREEN_NAME = "livechathelp247";
@@ -10,6 +10,22 @@ BRAND = "captain";
 // "romus" or "captain"
 // Static base prompt (rules, behavior — no KB content)
 basePrompt = "You are a professional customer support agent for CaptainSlots, an online casino.\n\n## Your Role\n- Be friendly, professional, and concise\n- Only answer questions related to casino, bonuses, payments, accounts, and technical issues\n- Never invent information  only use the knowledge base provided below\n- Never ask the customer which casino they are playing on  you only serve CaptainSlots\n- If you need to transfer to a human agent, simply say you will connect them with an agent\n\n## Language Rules (CRITICAL)\n- Detect the language of each customer message and respond ONLY in that language\n- English message -> English response ONLY\n- French message -> French response ONLY\n- Never mix languages in a single response\n- If the customer switches language, switch with them immediately and stay in that language\n\n## Conversation Rules\n- If you asked multiple questions and the customer answered only some, acknowledge their answer and ask the remaining questions\n- Never go silent after a partial answer  always continue the conversation\n- Keep responses concise  do not repeat information already given in the same conversation\n\n## Important Rules\n- Max cashout from bonuses = 10x original deposit (e.g. 20 deposit -> max 200 withdrawal)\n- Bonus wagering = x40; Free spin winnings wagering = x30\n- Max bet with active bonus = 5/spin\n- Bonus cannot be used on: live casino, jackpot slots, table games\n- Minimum withdrawal: 30\n- KYC required before first withdrawal\n- Always greet the customer warmly and ask how you can help if the message is just \"Bonjour\" or similar\n- Never directly describe no deposit offers  instead suggest checking the promotions page or their email for current offers\n\n## What you CAN do\n- Answer general questions about bonuses, promotions, withdrawals, KYC, account rules\n- Explain terms and conditions, limits, wagering requirements\n- Guide customers on how processes work\n\n## What you CANNOT do (use TRANSFER immediately)\nYou have NO access to any account. You cannot:\n- Check, approve, cancel or modify any withdrawal\n- Credit, cancel or modify any bonus\n- Send any email or verify any document\n- Unlock, close, pause or reopen any account\n- Check a player's balance, history or status\n- Perform ANY action on a player's account\n\nIf the customer's request requires ANY of the above, do not ask for their details, do not pretend you can help  immediately explain in their language that you are transferring them to an agent, then add TRANSFER.\n\nAlso use TRANSFER if:\n- The customer explicitly asks for a human agent\n- The customer is angry or threatening\n\nIf you have no relevant information to answer their question, your ONLY allowed response is (translated to their language):\n\"Let me transfer you to the right department for this. Shall I go ahead?\"\n\nYou are FORBIDDEN from adding any other sentence before or after this. No apology, no explanation, no mention of missing information. Never say \"agent\", never say \"I don't have\".\n- If they say yes -> TRANSFER\n- If they say no -> \"Is there anything else I can help you with?\"\n\n## Knowledge Base Rules (CRITICAL)\n- The ONLY facts you may use are: (1) the rules explicitly stated above (wagering, limits, KYC, etc.), and (2) the knowledge base sections provided below\n- If the answer is not covered by either source, you MUST NOT answer  not even a guess, not even \"generally speaking\", not even a number that sounds reasonable\n- NEVER use your training data or general casino knowledge to fill gaps\n- NEVER reveal that you lack information  just offer to transfer\n- Never mention the \"knowledge base\" to the customer  they don't know it exists\n\n## Source Tagging (INTERNAL  never shown to customer)\nAt the very end of every reply, append one of these tags on a new line:\n- [SOURCE:kb]  answer came from the knowledge base sections below\n- [SOURCE:prompt_rules]  answer came from the rules explicitly stated in this prompt (wagering, KYC, withdrawal minimum, etc.)\n- [SOURCE:transfer]  no information available, transferring\n- [SOURCE:hallucination_risk]  you are unsure of the source; use this if you feel uncertain\n\nThis tag is for internal logging only. It will be stripped before the customer sees the reply.\n";
+// ── Agent online hours check (Bulgaria time = UTC+3 in summer) ───
+nowMs = zoho.currenttime.toLong();
+bgMs = nowMs + (3 * 60 * 60 * 1000);
+bgTime = zoho.longtodate(bgMs);
+bgHour = bgTime.getHour();
+bgMinute = bgTime.getMinute();
+bgDow = bgTime.getDayOfWeek(); // 1=Sun,2=Mon,3=Tue,4=Wed,5=Thu,6=Fri,7=Sat
+bgMod = bgHour * 60 + bgMinute;
+agentOnline = false;
+if(bgDow == 2 && bgMod >= 600 && bgMod < 1260) { agentOnline = true; }
+if(bgDow == 3 && bgMod >= 600 && bgMod < 1140) { agentOnline = true; }
+if(bgDow == 4 && bgMod >= 600 && bgMod < 1140) { agentOnline = true; }
+if(bgDow == 5 && bgMod >= 600 && bgMod < 1260) { agentOnline = true; }
+if(bgDow == 6 && bgMod >= 600 && bgMod < 1260) { agentOnline = true; }
+if(bgDow == 7 && bgMod >= 570 && bgMod < 1110) { agentOnline = true; }
+
 // Get current message and conversation ID
 customerMessage = message.get("text");
 convId = visitor.get("active_conversation_id");
@@ -39,14 +55,19 @@ if(kbResponse != null && kbResponse.size() > 0)
 		chunksUsed.add(chunkInfo);
 	}
 }
-// Build final system prompt
+// ── Build final system prompt ─────────────────────────────────
+offlineNote = "";
+if(!agentOnline)
+{
+	offlineNote = "\n\n## IMPORTANT — Agents Currently Offline\nOur support agents are currently offline (available Mon-Fri 10:00-19:00, Mon/Thu/Fri until 21:00, Sat 09:30-18:30 Bulgaria time).\n- Do NOT offer to transfer to an agent. Do NOT say you will connect them with anyone.\n- Do NOT use TRANSFER under any circumstances.\n- If the customer needs account-specific help you cannot provide, say (in their language): \"Our support team is currently offline. Please contact us via email at support@captainslots.com and we will respond as soon as possible.\"\n- Never apologize excessively. Stay helpful and concise.";
+}
 if(kbContent != "")
 {
-	systemPrompt = basePrompt + "\n\n## Knowledge Base (relevant sections)\n\n" + kbContent;
+	systemPrompt = basePrompt + offlineNote + "\n\n## Knowledge Base (relevant sections)\n\n" + kbContent;
 }
 else
 {
-	systemPrompt = basePrompt;
+	systemPrompt = basePrompt + offlineNote;
 }
 // ── Load conversation history from SalesIQ API ───────────────
 messages = list();
@@ -93,7 +114,7 @@ if(convId != null && convId != "")
 // ── Early forward: last bot msg asked to connect + customer says yes ─────────
 lowerMsg = customerMessage.toLowerCase();
 isAffirmative = lowerMsg == "yes" || lowerMsg == "oui" || lowerMsg == "ok" || lowerMsg == "sure" || lowerMsg == "yeah" || lowerMsg == "yep" || lowerMsg == "ye" || lowerMsg == "y" || lowerMsg.contains("yes please") || lowerMsg.contains("go ahead") || lowerMsg.contains("connect me");
-if(isAffirmative && messages.size() > 0)
+if(agentOnline && isAffirmative && messages.size() > 0)
 {
 	lastMsg = messages.get(messages.size() - 1);
 	if(lastMsg.get("role") == "assistant")
@@ -249,7 +270,7 @@ invokeurl
 	headers:{"Authorization":"Bearer " + SUPABASE_KEY,"apikey":SUPABASE_KEY,"content-type":"application/json","Prefer":"return=minimal"}
 ]
 // ── Handoff detection ─────────────────────────────────────────
-if(replyText.contains("TRANSFER"))
+if(agentOnline && replyText.contains("TRANSFER"))
 {
 	tagIndex = replyText.lastIndexOf("TRANSFER");
 	cleanText = replyText.substring(0,tagIndex).trim();
@@ -260,6 +281,19 @@ if(replyText.contains("TRANSFER"))
 		fwdResponse.put("replies",{cleanText});
 	}
 	return fwdResponse;
+}
+if(!agentOnline && replyText.contains("TRANSFER"))
+{
+	tagIndex = replyText.lastIndexOf("TRANSFER");
+	cleanText = replyText.substring(0,tagIndex).trim();
+	if(cleanText == "")
+	{
+		cleanText = "Our support team is currently offline. Please contact us at support@captainslots.com and we will get back to you as soon as possible.";
+	}
+	offlineReply = Map();
+	offlineReply.put("action","reply");
+	offlineReply.put("replies",{cleanText});
+	return offlineReply;
 }
 botResponse = Map();
 botResponse.put("action","reply");
