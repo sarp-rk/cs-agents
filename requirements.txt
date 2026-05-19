@@ -2,3 +2,5 @@ requests
 anthropic
 python-dotenv
 openpyxl
+flask
+slack-sdk
