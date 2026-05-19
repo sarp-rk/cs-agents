@@ -428,6 +428,7 @@ def main():
     filled = {k: v for k, v in buckets.items() if v}
     print(f"{len(filled)}/{len(CATEGORIES)} kategori doldu\n")
 
+    total_updated = 0
     for brand in ["romus", "captain"]:
         print(f"── {brand.title()} ──")
         updated = 0
@@ -454,10 +455,11 @@ def main():
             except Exception as e:
                 print(f"  ✗ {category}: {e}")
 
+        total_updated += updated
         print(f"  {updated} chunk güncellendi\n")
 
     update_pipeline_state("last_kb_update", datetime.now(timezone.utc).isoformat())
-    print("Tamamlandı!")
+    print(f"SUMMARY: {total_updated} chunk güncellendi")
 
 
 if __name__ == "__main__":
