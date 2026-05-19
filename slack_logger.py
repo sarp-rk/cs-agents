@@ -1,5 +1,6 @@
 import os
 import logging
+import requests as req
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 
@@ -31,6 +32,23 @@ def conversation_end():
     except Exception as e:
         log.error(f"Error processing {conv_id}: {e}")
     return jsonify({"ok": True}), 200
+
+def get_kb_logs(conv_id):
+    """Supabase kb_logs tablosundan conv_id'ye ait tüm satırları çek."""
+    headers = {
+        "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
+        "apikey": SUPABASE_SERVICE_KEY,
+    }
+    resp = req.get(
+        f"{SUPABASE_URL}/rest/v1/kb_logs",
+        params={"conv_id": f"eq.{conv_id}", "select": "customer_message,bot_reply,chunks_used,source_tag"},
+        headers=headers,
+        timeout=10,
+    )
+    if resp.status_code != 200:
+        log.warning(f"kb_logs fetch failed: {resp.status_code} {resp.text[:200]}")
+        return []
+    return resp.json()
 
 def process_conversation(conv_id, brand, zoho_data):
     pass  # implemented in later tasks
