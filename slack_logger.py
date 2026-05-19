@@ -3,6 +3,8 @@ import logging
 import requests as req
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 load_dotenv()
 
@@ -83,8 +85,96 @@ def get_kb_logs(conv_id):
         return []
     return resp.json()
 
+def slack_client():
+    return WebClient(token=SLACK_BOT_TOKEN)
+
+def format_chunks(chunks_used):
+    """chunks_used JSON listesinden okunabilir string üret."""
+    if not chunks_used:
+        return ""
+    parts = []
+    for c in chunks_used:
+        cat = c.get("category", "?")
+        sim = c.get("similarity", 0)
+        parts.append(f"`{cat}` {sim:.2f}")
+    return "📎 " + " · ".join(parts)
+
+def format_duration(duration_ms):
+    if not duration_ms:
+        return ""
+    secs = int(duration_ms) // 1000
+    return f"{secs // 60}m {secs % 60}s"
+
+def send_to_slack(conv_id, brand, zoho_data, zoho_msgs, kb_logs):
+    """Konuşmayı Slack'e thread olarak gönder."""
+    client = slack_client()
+
+    # kb_logs'u customer_message'a göre index'le
+    kb_index = {}
+    for row in kb_logs:
+        key = (row.get("customer_message") or "").strip()
+        kb_index[key] = row
+
+    # Visitor bilgisi
+    visitor = zoho_data.get("visitor", {})
+    visitor_name = visitor.get("name") or zoho_data.get("visitor_name") or "Visitor"
+    duration_ms = zoho_data.get("duration") or zoho_data.get("duration_ms")
+    duration_str = f" | ⏱ {format_duration(duration_ms)}" if duration_ms else ""
+
+    # Ana mesaj
+    header = f"📩 *Yeni Konuşma* | `{brand}` | Conv `{conv_id[-8:]}`\n👤 {visitor_name}{duration_str}"
+    try:
+        resp = client.chat_postMessage(channel=SLACK_CHANNEL_ID, text=header)
+        thread_ts = resp["ts"]
+    except SlackApiError as e:
+        log.error(f"Slack header post failed: {e}")
+        return
+
+    # Thread reply'ları
+    prev_visitor_text = None
+    for msg in zoho_msgs:
+        sender = msg.get("sender", {}).get("type", "")
+        text = (msg.get("message") or {}).get("text", "")
+        if not text or not text.strip():
+            continue
+
+        if sender == "visitor":
+            prev_visitor_text = text.strip()
+            slack_text = f"👤  {text}"
+        elif sender in ("bot", "operator", "agent"):
+            kb = kb_index.get(prev_visitor_text or "")
+            chunk_str = format_chunks(kb.get("chunks_used") if kb else None)
+            source = kb.get("source_tag", "") if kb else ""
+            source_str = f"\n🏷️  `{source}`" if source else ""
+            chunk_line = f"\n{chunk_str}" if chunk_str else ""
+            slack_text = f"🤖  {text}{chunk_line}{source_str}"
+            prev_visitor_text = None
+        else:
+            continue
+
+        try:
+            client.chat_postMessage(channel=SLACK_CHANNEL_ID, text=slack_text, thread_ts=thread_ts)
+        except SlackApiError as e:
+            log.error(f"Slack reply post failed: {e}")
+
+    # Transfer varsa son satır
+    transferred_to = zoho_data.get("attender", {}).get("name") or zoho_data.get("operator")
+    if transferred_to:
+        try:
+            client.chat_postMessage(
+                channel=SLACK_CHANNEL_ID,
+                text=f"↗️  *Transfer edildi* → {transferred_to}",
+                thread_ts=thread_ts,
+            )
+        except SlackApiError as e:
+            log.error(f"Slack transfer post failed: {e}")
+
 def process_conversation(conv_id, brand, zoho_data):
-    pass  # implemented in later tasks
+    zoho_msgs = get_zoho_messages(conv_id)
+    kb_logs = get_kb_logs(conv_id)
+    log.info(f"Conv {conv_id}: {len(zoho_msgs)} msgs, {len(kb_logs)} kb_logs")
+    send_to_slack(conv_id, brand, zoho_data, zoho_msgs, kb_logs)
+    log.info(f"Conv {conv_id}: sent to Slack")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5002)
