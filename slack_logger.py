@@ -165,11 +165,15 @@ def send_to_slack(conv_id, brand, zoho_data, zoho_msgs, kb_logs):
 
     # Transfer varsa son satır
     transferred_to = zoho_data.get("attender", {}).get("name") or zoho_data.get("operator")
-    if transferred_to:
+    was_transferred = transferred_to or any(
+        (row.get("source_tag") == "transfer") for row in kb_logs
+    )
+    if was_transferred:
+        transfer_text = f"↗️  *Transferred* → {transferred_to}" if transferred_to else "↗️  *Transferred to agent*"
         try:
             client.chat_postMessage(
                 channel=SLACK_CHANNEL_ID,
-                text=f"↗️  *Transferred* → {transferred_to}",
+                text=transfer_text,
                 thread_ts=thread_ts,
             )
         except SlackApiError as e:
