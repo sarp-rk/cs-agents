@@ -15,6 +15,39 @@ SLACK_CHANNEL_ID = os.getenv("SLACK_CHANNEL_ID")
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
 ZOHO_SCREEN_NAME = os.getenv("ZOHO_SCREEN_NAME", "livechathelp247")
+ZOHO_CLIENT_ID = os.getenv("ZOHO_CLIENT_ID")
+ZOHO_CLIENT_SECRET = os.getenv("ZOHO_CLIENT_SECRET")
+ZOHO_REFRESH_TOKEN = os.getenv("ZOHO_REFRESH_TOKEN")
+ZOHO_ACCOUNTS_URL = os.getenv("ZOHO_ACCOUNTS_URL", "https://accounts.zoho.eu")
+
+def get_zoho_token():
+    resp = req.post(f"{ZOHO_ACCOUNTS_URL}/oauth/v2/token", data={
+        "refresh_token": ZOHO_REFRESH_TOKEN,
+        "client_id": ZOHO_CLIENT_ID,
+        "client_secret": ZOHO_CLIENT_SECRET,
+        "grant_type": "refresh_token",
+    }, timeout=10)
+    return resp.json()["access_token"]
+
+def get_zoho_messages(conv_id):
+    """Zoho API'den konuşma mesajlarını çek, kronolojik sırayla döndür."""
+    try:
+        token = get_zoho_token()
+    except Exception as e:
+        log.error(f"Zoho token error: {e}")
+        return []
+    headers = {"Authorization": f"Zoho-oauthtoken {token}"}
+    resp = req.get(
+        f"https://salesiq.zoho.eu/api/v2/{ZOHO_SCREEN_NAME}/conversations/{conv_id}/messages",
+        params={"limit": 50},
+        headers=headers,
+        timeout=10,
+    )
+    if resp.status_code != 200:
+        log.warning(f"Zoho messages fetch failed: {resp.status_code}")
+        return []
+    data = resp.json().get("data", [])
+    return sorted(data, key=lambda m: m.get("time", 0))
 
 @app.route("/webhook/conversation-end", methods=["HEAD", "POST"])
 def conversation_end():
