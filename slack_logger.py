@@ -140,7 +140,8 @@ def send_to_slack(conv_id, brand, zoho_data, zoho_msgs, kb_logs):
     prev_visitor_text = None
     for msg in zoho_msgs:
         sender = msg.get("sender", {}).get("type", "")
-        text = (msg.get("message") or {}).get("text", "")
+        from html import unescape
+        text = unescape((msg.get("message") or {}).get("text", ""))
         if not text or not text.strip():
             continue
 
