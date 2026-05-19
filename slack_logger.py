@@ -92,6 +92,12 @@ def format_chunks(chunks_used):
     """chunks_used JSON listesinden okunabilir string üret."""
     if not chunks_used:
         return ""
+    import json
+    if isinstance(chunks_used, str):
+        try:
+            chunks_used = json.loads(chunks_used)
+        except Exception:
+            return ""
     parts = []
     for c in chunks_used:
         cat = c.get("category", "?")
@@ -122,7 +128,7 @@ def send_to_slack(conv_id, brand, zoho_data, zoho_msgs, kb_logs):
     duration_str = f" | ⏱ {format_duration(duration_ms)}" if duration_ms else ""
 
     # Ana mesaj
-    header = f"📩 *Yeni Konuşma* | `{brand}` | Conv `{conv_id[-8:]}`\n👤 {visitor_name}{duration_str}"
+    header = f"📩 *New Conversation* | `{brand}` | Conv `{conv_id[-8:]}`\n👤 {visitor_name}{duration_str}"
     try:
         resp = client.chat_postMessage(channel=SLACK_CHANNEL_ID, text=header)
         thread_ts = resp["ts"]
@@ -163,7 +169,7 @@ def send_to_slack(conv_id, brand, zoho_data, zoho_msgs, kb_logs):
         try:
             client.chat_postMessage(
                 channel=SLACK_CHANNEL_ID,
-                text=f"↗️  *Transfer edildi* → {transferred_to}",
+                text=f"↗️  *Transferred* → {transferred_to}",
                 thread_ts=thread_ts,
             )
         except SlackApiError as e:
