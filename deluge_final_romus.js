@@ -169,9 +169,9 @@ if(response == null || response.get("content") == null || response.get("error") 
 {
 	tgBody = Map();
 	tgBody.put("chat_id","-5155045003");
-	tgText = "*CS Bot ERROR* ConvId: " + convId + " | Retries: " + retryCount + " | *Type:* " + errType;
+	tgText = "<b>CS Bot ERROR</b> ConvId: " + convId + " | Retries: " + retryCount + " | <b>Type:</b> " + errType;
 	if(errType == "overloaded_error") { tgText = tgText + "\nhttps://status.anthropic.com"; }
-	tgBody.put("parse_mode","Markdown");
+	tgBody.put("parse_mode","HTML");
 	tgBody.put("text",tgText);
 	invokeurl
 	[
