@@ -168,7 +168,7 @@ for each  attempt in {1,2,3}
 if(response == null || response.get("content") == null || response.get("error") != null)
 {
 	tgBody = Map();
-	tgBody.put("chat_id","-5151563452");
+	tgBody.put("chat_id","-5155045003");
 	tgText = "*CS Bot ERROR* ConvId: " + convId + " | Retries: " + retryCount + " | *Type:* " + errType;
 	if(errType == "overloaded_error") { tgText = tgText + "\nhttps://status.anthropic.com"; }
 	tgBody.put("parse_mode","Markdown");
