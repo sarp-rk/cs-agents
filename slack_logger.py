@@ -57,8 +57,27 @@ def conversation_end():
         return "", 200
     data = request.json or {}
     log.info(f"Webhook received: {data}")
-    conv_id = data.get("conv_id") or data.get("conversation", {}).get("id")
-    brand = data.get("brand", "unknown")
+    conv_id = (
+        data.get("conv_id")
+        or data.get("entity_id")
+        or data.get("id")
+        or data.get("conversation", {}).get("id")
+        or (data.get("entity") or {}).get("id")
+    )
+    DEPT_BRAND_MAP = {
+        "114474000001615143": "captain",
+        "114474000002303023": "romus",
+    }
+    dept_id = (data.get("entity") or {}).get("department_id", "")
+    dept = (data.get("department") or {}).get("name", "") or data.get("department_name", "")
+    if dept_id in DEPT_BRAND_MAP:
+        brand = DEPT_BRAND_MAP[dept_id]
+    elif "captain" in dept.lower():
+        brand = "captain"
+    elif "romus" in dept.lower():
+        brand = "romus"
+    else:
+        brand = data.get("brand", dept or "unknown")
     if not conv_id:
         log.warning("No conv_id in payload")
         return jsonify({"error": "no conv_id"}), 400

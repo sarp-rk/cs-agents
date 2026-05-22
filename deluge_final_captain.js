@@ -170,7 +170,10 @@ if(response == null || response.get("content") == null || response.get("error") 
 	// Notify via Telegram
 	tgBody = Map();
 	tgBody.put("chat_id","-5151563452");
-	tgBody.put("text","[CS Bot ERROR] ConvId: " + convId + " | Retries: " + retryCount + " | Error: " + response.toString());
+	tgText = "*CS Bot ERROR* ConvId: " + convId + " | Retries: " + retryCount + " | *Type:* " + errType;
+	if(errType == "overloaded_error") { tgText = tgText + "\nhttps://status.anthropic.com"; }
+	tgBody.put("parse_mode","Markdown");
+	tgBody.put("text",tgText);
 	invokeurl
 	[
 		url :"https://api.telegram.org/bot8697477909:AAHleRugZFFifdMA3aVSY53EaBZ0o-v1B3I/sendMessage"
