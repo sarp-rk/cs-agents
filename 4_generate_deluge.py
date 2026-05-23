@@ -1,4 +1,4 @@
-"""
+﻿"""
 system_prompt.txt'i Deluge string formatına çevirip
 deluge_script.js şablonundan deluge_final.js üretir.
 
@@ -9,7 +9,6 @@ from pathlib import Path
 
 TEMPLATE = Path("deluge_script.js")
 PROMPT_FILE = Path("data/system_prompt.txt")
-OUTPUT = Path("deluge_final.js")
 
 
 def escape_for_deluge(text: str) -> str:
@@ -47,8 +46,12 @@ def escape_for_deluge(text: str) -> str:
 
 
 def main():
-    template = TEMPLATE.read_text(encoding="utf-8")
-    prompt_raw = PROMPT_FILE.read_text(encoding="utf-8")
+    import sys
+    brand = sys.argv[1] if len(sys.argv) > 1 else None
+    prompt_path = Path(f'data/system_prompt_{brand}.txt') if brand else PROMPT_FILE
+    out_path = Path(f'deluge_final_{brand}.js') if brand else OUTPUT
+    template = TEMPLATE.read_text(encoding='utf-8')
+    prompt_raw = prompt_path.read_text(encoding='utf-8')
 
     prompt_escaped = escape_for_deluge(prompt_raw)
     import os
@@ -58,6 +61,7 @@ def main():
     result = template.replace('"<SYSTEM_PROMPT_BURAYA>"', f'"{prompt_escaped}"')
     result = result.replace('"<SUPABASE_URL_BURAYA>"', f'"{os.getenv("SUPABASE_URL", "")}"')
     result = result.replace('"<SUPABASE_ANON_KEY_BURAYA>"', f'"{os.getenv("SUPABASE_ANON_KEY", "")}"')
+    result = result.replace('"<ANTHROPIC_API_KEY_BURAYA>"', os.getenv("ANTHROPIC_API_KEY", ""))
 
     if '"<SYSTEM_PROMPT_BURAYA>"' in template and '"<SYSTEM_PROMPT_BURAYA>"' not in result:
         print("Sistem promptu yerlestirildi.")
@@ -65,10 +69,8 @@ def main():
         print("HATA: Placeholder bulunamadi, deluge_script.js kontrol et.")
         return
 
-    OUTPUT.write_text(result, encoding="utf-8")
 
     char_count = len(result)
-    print(f"Dosya: {OUTPUT}")
     print(f"Boyut: {char_count:,} karakter ({char_count / 1024:.1f} KB)")
 
     if char_count > 500_000:
@@ -77,10 +79,11 @@ def main():
         print("Boyut OK — Deluge'a yapistirabilirsin.")
 
     print(f"\nSonraki adim:")
-    print(f"  1. {OUTPUT} dosyasini ac")
     print(f"  2. <ANTHROPIC_API_KEY_BURAYA> satirini gercek API key ile degistir")
     print(f"  3. Zoho SalesIQ > Zobot > Code Block'a yapistir")
 
 
 if __name__ == "__main__":
     main()
+
+

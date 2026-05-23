@@ -1,10 +1,11 @@
-import os
+﻿import os
 import logging
 import requests as req
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+import anthropic
 
 load_dotenv()
 
@@ -104,6 +105,33 @@ def get_kb_logs(conv_id):
         return []
     return resp.json()
 
+_anthropic_client = None
+
+def get_anthropic_client():
+    global _anthropic_client
+    if _anthropic_client is None:
+        _anthropic_client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+    return _anthropic_client
+
+def translate_to_english(text):
+    """Translate text to English using Claude Haiku. Returns original on failure."""
+    if not text or not text.strip():
+        return text
+    try:
+        client = get_anthropic_client()
+        msg = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=500,
+            messages=[{
+                "role": "user",
+                "content": f"Translate the following text to English. Return ONLY the translation, no explanations:\n\n{text}"
+            }]
+        )
+        return msg.content[0].text.strip()
+    except Exception as e:
+        log.warning(f"Translation failed: {e}")
+        return text
+
 def slack_client():
     return WebClient(token=SLACK_BOT_TOKEN)
 
@@ -141,13 +169,18 @@ def send_to_slack(conv_id, brand, zoho_data, zoho_msgs, kb_logs):
         kb_index[key] = row
 
     # Visitor bilgisi
-    visitor = zoho_data.get("visitor", {})
+    entity = zoho_data.get("entity", {})
+    visitor = entity.get("visitor") or zoho_data.get("visitor") or {}
     visitor_name = visitor.get("name") or zoho_data.get("visitor_name") or "Visitor"
-    duration_ms = zoho_data.get("duration") or zoho_data.get("duration_ms")
+    duration_ms = zoho_data.get("duration") or zoho_data.get("duration_ms") or (
+        (int(entity.get("end_time", 0)) - int(entity.get("opened_time", 0))) if entity.get("end_time") and entity.get("opened_time") else None
+    )
     duration_str = f" | ⏱ {format_duration(duration_ms)}" if duration_ms else ""
+    ref_id = entity.get("reference_id") or ""
+    ref_str = f" | #{ref_id}" if ref_id else ""
 
     # Ana mesaj
-    header = f"📩 *New Conversation* | `{brand}` | Conv `{conv_id[-8:]}`\n👤 {visitor_name}{duration_str}"
+    header = f"📩 *New Conversation* | `{brand}` | Conv `{conv_id[-8:]}`{ref_str}\n👤 {visitor_name}{duration_str}"
     try:
         resp = client.chat_postMessage(channel=SLACK_CHANNEL_ID, text=header)
         thread_ts = resp["ts"]
@@ -166,14 +199,14 @@ def send_to_slack(conv_id, brand, zoho_data, zoho_msgs, kb_logs):
 
         if sender == "visitor":
             prev_visitor_text = text.strip()
-            slack_text = f"👤  {text}"
+            slack_text = f"👤  {translate_to_english(text)}"
         elif sender in ("bot", "operator", "agent"):
             kb = kb_index.get(prev_visitor_text or "")
             chunk_str = format_chunks(kb.get("chunks_used") if kb else None)
             source = kb.get("source_tag", "") if kb else ""
             source_str = f"\n🏷️  `{source}`" if source else ""
             chunk_line = f"\n{chunk_str}" if chunk_str else ""
-            slack_text = f"🤖  {text}{chunk_line}{source_str}"
+            slack_text = f"🤖  {translate_to_english(text)}{chunk_line}{source_str}"
             prev_visitor_text = None
         else:
             continue
@@ -204,3 +237,4 @@ def process_conversation(conv_id, brand, zoho_data):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5002)
+
